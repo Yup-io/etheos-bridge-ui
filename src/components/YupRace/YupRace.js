@@ -5,8 +5,6 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
-import MetricsBar from '../MetricsBar/MetricsBar'
-import ControllerButtons from '../ControllerButtons/ControllerButtons'
 import Footer from '../Footer/Footer'
 
 const styles = theme => ({
@@ -127,8 +125,6 @@ class YupRace extends Component {
               scrolling='no'
               frameBorder='0'
             />
-            <MetricsBar />
-            <ControllerButtons />
             <Footer />
           </div>
         </div>
