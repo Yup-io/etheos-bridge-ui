@@ -1,0 +1,1 @@
+{"ast":null,"code":"export default function isOnline() {\n  if (typeof navigator.onLine !== 'undefined') {\n    return navigator.onLine;\n  } // always assume it's online\n\n\n  return true;\n}","map":null,"metadata":{},"sourceType":"module"}

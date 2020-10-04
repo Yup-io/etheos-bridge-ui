@@ -1,0 +1,15 @@
+import { Sym } from "./symbol";
+import { Asset } from "./asset";
+import { ExtendedAsset } from "./extended_asset";
+import { BigInteger } from "big-integer";
+import { Name } from "./name";
+import { ExtendedSymbol } from "./extended_symbol";
+export declare function getType(obj: any): string;
+export declare function number_to_bigint(num: number): BigInteger;
+export declare function isNull(value: any): boolean;
+export declare function getAmount(obj: any): BigInteger;
+export declare function getSymbol(obj: any): Sym | null;
+export declare function getContract(obj: any): Name | null;
+export declare function asset_to_number(quantity: Asset | ExtendedAsset): number;
+export declare function number_to_asset(num: number | bigint | BigInteger, sym: Sym | ExtendedSymbol): Asset;
+export declare function asset_to_precision(quantity: Asset, precision: number): Asset;

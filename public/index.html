@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1">
+  <meta name="description" content="Yup Racing is a yield farming interface for the YUP crypto token">
+  <meta name="keywords" content="best,smartest,columbia,blockchain,crypto,yup,eth,bridge">
+  <meta name="author" content="Yup.io Inc.">
+  <meta property="og:image" content="https://app.yup.io/images/thumbnail.gif">
+  <meta property="twitter:image" content="https://app.yup.io/images/thumbnail.gif">
+  <!-- OPEN GRAPH META -->
+  <meta property="og:title" content="Yup | Empowered opinions for content across the web. ">
+  <meta property="og:description" content="Yup Racing is a yield farming interface for the YUP crypto token">
+  <meta property="og:url" content="https://app.yup.io/index.html">
+  <meta property="og:site_name" content="Yup | Crypto Yield Farming">
+  <meta name="twitter:image:alt" content="Yup Network">
+  <link rel="preconnect" href="https://api.faviconkit.com">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137858250-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'UA-137858250-2');
+  </script>
+  <script>
+    (function () { var w = window; var ic = w.Intercom; if (typeof ic === "function") { ic('reattach_activator'); ic('update', w.intercomSettings); } else { var d = document; var i = function () { i.c(arguments); }; i.q = []; i.c = function (args) { i.q.push(args); }; w.Intercom = i; var l = function () { var s = d.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = 'https://widget.intercom.io/widget/nenz9lls'; var x = d.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x); }; if (w.attachEvent) { w.attachEvent('onload', l); } else { w.addEventListener('load', l, false); } } })();
+  </script>
+  <script>
+    !function () {
+      var analytics = window.analytics = window.analytics || []; if (!analytics.initialize) if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice."); else {
+        analytics.invoked = !0; analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on", "addSourceMiddleware", "addDestinationMiddleware"]; analytics.factory = function (e) { return function () { var t = Array.prototype.slice.call(arguments); t.unshift(e); analytics.push(t); return analytics } }; for (var e = 0; e < analytics.methods.length; e++) { var t = analytics.methods[e]; analytics[t] = analytics.factory(t) } analytics.load = function (e, t) { var n = document.createElement("script"); n.type = "text/javascript"; n.async = !0; n.src = "https://cdn.segment.com/analytics.js/v1/" + e + "/analytics.min.js"; var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(n, a); analytics._loadOptions = t }; analytics.SNIPPET_VERSION = "4.1.0";
+        const whitelistedDomains = ["www.app.yup.io", "app.yup.io"]
+        const domain = window.location.hostname
+        const opts = whitelistedDomains.includes(domain) ? {} : { integrations: { All: false } }
+        analytics.load("gXI2iPARgi1E0APQ1Ntr5TwvGF78Y3mC", opts);
+      }
+    }();
+  </script>
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-KZR2RCG');</script>
+  <!-- End Google Tag Manager -->
+  <!--Mix Panel -->
+  <script>(function (c, a) {
+      if (!a.__SV) {
+        var b = window; try { var d, m, j, k = b.location, f = k.hash; d = function (a, b) { return (m = a.match(RegExp(b + "=([^&]*)"))) ? m[1] : null }; f && d(f, "state") && (j = JSON.parse(decodeURIComponent(d(f, "state"))), "mpeditor" === j.action && (b.sessionStorage.setItem("_mpcehash", f), history.replaceState(j.desiredHash || "", c.title, k.pathname + k.search))) } catch (n) { } var l, h; window.mixpanel = a; a._i = []; a.init = function (b, d, g) {
+          function c(b, i) {
+            var a = i.split("."); 2 == a.length && (b = b[a[0]], i = a[1]); b[i] = function () {
+              b.push([i].concat(Array.prototype.slice.call(arguments,
+                0)))
+            }
+          } var e = a; "undefined" !== typeof g ? e = a[g] = [] : g = "mixpanel"; e.people = e.people || []; e.toString = function (b) { var a = "mixpanel"; "mixpanel" !== g && (a += "." + g); b || (a += " (stub)"); return a }; e.people.toString = function () { return e.toString(1) + ".people (stub)" }; l = "disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");
+          for (h = 0; h < l.length; h++)c(e, l[h]); var f = "set set_once union unset remove delete".split(" "); e.get_group = function () { function a(c) { b[c] = function () { call2_args = arguments; call2 = [c].concat(Array.prototype.slice.call(call2_args, 0)); e.push([d, call2]) } } for (var b = {}, d = ["get_group"].concat(Array.prototype.slice.call(arguments, 0)), c = 0; c < f.length; c++)a(f[c]); return b }; a._i.push([b, d, g])
+        }; a.__SV = 1.2; b = c.createElement("script"); b.type = "text/javascript"; b.async = !0; b.src = "undefined" !== typeof MIXPANEL_CUSTOM_LIB_URL ?
+          MIXPANEL_CUSTOM_LIB_URL : "file:" === c.location.protocol && "//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//) ? "https://cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js" : "//cdn4.mxpnl.com/libs/mixpanel-2-latest.min.js"; d = c.getElementsByTagName("script")[0]; d.parentNode.insertBefore(b, d)
+      }
+    })(document, window.mixpanel || []);
+    mixpanel.init("fd8b4c2ef3374fa5d7963ab962b90920")</script>
+
+  <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+
+  <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+  <style>
+    body {
+      background-color: #3A3A3A;
+      margin: 0 auto;
+    }
+  </style>
+  <title>Yup Racing</title>
+  <meta name="description"
+    content="Yup is a network that empowers your opinions with money and social capital. Yup forms a social consensus layer on the internet, accurately representing the agreed-upon social value of anything, from random Tweets to your history professor.">
+  <meta name="keywords" content="best,smartest,columbia,blockchain,crypto">
+  <meta name="author" content="Yup.io Inc.">
+  <meta property="og:image" content="https://app.yup.io/images/thumbnail.gif">
+  <meta property="twitter:image" content="https://app.yup.io/images/thumbnail.gif">
+
+  <!-- OPEN GRAPH META -->
+  <meta property="og:title" content="Yup | Empowered opinions for content across the web. ">
+  <meta property="og:description"
+    content="Yup is a network that empowers your opinions with money and social capital. Yup forms a social consensus layer on the internet, accurately representing the agreed-upon social value of anything, from random Tweets to your history professor. Yup then rewards its users proportional to the social value of their contributions. You can earn rewards as you normally browse the internet. All you have to do is vote through the extension, or directly on Twitter, Reddit, YouTube, or Google Maps. The technology is complicated, but how it works is simple.">
+  <meta property="og:url" content="https://app.yup.io/index.html">
+
+  <meta property="og:site_name" content="Yup | The Opinion Economy.">
+  <meta name="twitter:image:alt" content="Yup Network">
+
+</head>
+
+<body>
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600|Rubik:200,300,400,500,600|RacingSansOne|Bungee&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fontawesome/css/all.css">
+  <link rel="stylesheet" href="assets/fonts/font-awesome/css/font-awesome.min.css">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KZR2RCG" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <noscript>
+    You need to enable JavaScript to run this app.
+  </noscript>
+  <div id="root"></div>
+  <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  <!-- Mix Panel -->
+  <script type="text/javascript">
+    mixpanel.track_links("a", "Link Click");
+  </script>
+  <script type="text/javascript">
+    mixpanel.track("App Visit");
+  </script>
+</body>
+
+</html>

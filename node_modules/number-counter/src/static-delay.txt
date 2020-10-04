@@ -1,0 +1,49 @@
+import React from 'react';
+
+export const MakeButton = props => {
+  const { text, marginTop, onClick, className } = props;
+  return (
+    <button style={{ marginTop: marginTop }} onClick={onClick} className={className}>{text}</button>
+  );
+}
+
+export class Increment extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      countedValue: props.start,
+    }
+    this.countUp = this.countUp.bind(this);
+  }
+
+  componentDidMount() {
+    const { start, end, delay } = this.props;
+    const totalCount = end - (start || 0) + 1;
+    const newDelay = (delay * 1000) / totalCount;
+    const newStartPoint = (end * 95) / 100;
+    this.countUp(start || 0, end, newDelay, Math.floor(newStartPoint));
+  }
+
+  countUp(start, end, delay, newStartPoint) {
+    let newDelay = delay;
+    let staticDelay = 100;
+    if (newStartPoint === start) {
+      newDelay += staticDelay;
+      staticDelay += 300;
+      newStartPoint = (end * 99) / 100;
+    }
+    if (start !== end) {
+      start++;
+      setTimeout(
+        () => this.setState({ countedValue: start }, () => this.countUp(start, end, newDelay, newStartPoint))
+        , delay);
+    }
+  }
+  render() {
+    const { countedValue } = this.state;
+    const { className } = this.props;
+    return (
+      <div className={className}>{countedValue}</div>
+    )
+  }
+}

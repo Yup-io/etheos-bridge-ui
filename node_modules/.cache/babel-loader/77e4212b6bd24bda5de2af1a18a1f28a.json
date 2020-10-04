@@ -1,0 +1,1 @@
+{"ast":null,"code":"export default function isDocumentVisible() {\n  if (typeof document !== 'undefined' && typeof document.visibilityState !== 'undefined') {\n    return document.visibilityState !== 'hidden';\n  } // always assume it's visible\n\n\n  return true;\n}","map":null,"metadata":{},"sourceType":"module"}
