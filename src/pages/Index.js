@@ -1,7 +1,7 @@
 import React, { Fragment, Component } from 'react'
 import MoonLoader from 'react-spinners/MoonLoader'
 import NavBar from '../components/NavBar/NavBar'
-import YupRace from '../components/YupRace/YupRace'
+import YupBridge from '../components/YupBridge/YupBridge'
 
 class Index extends Component {
   state = {
@@ -36,7 +36,7 @@ class Index extends Component {
     return (
       <Fragment>
         <NavBar />
-        <YupRace />
+        <YupBridge />
       </Fragment>
     )
   }

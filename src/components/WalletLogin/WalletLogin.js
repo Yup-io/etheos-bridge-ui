@@ -16,7 +16,7 @@ const styles = theme => ({
     backgroundColor: '#505050',
     color: '#FAFAFA',
     borderRadius: '100px',
-    margin: '0 10px',
+    margin: '0px 10px 10px 10px',
     padding: '8px 24px',
     fontFamily: 'Rubik',
     fontWeight: '400',

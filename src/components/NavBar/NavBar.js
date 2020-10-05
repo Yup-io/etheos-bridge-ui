@@ -1,19 +1,17 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import { Toolbar, Grid, AppBar, Tooltip } from '@material-ui/core'
+import { Toolbar, Grid, AppBar } from '@material-ui/core'
+import Typography from '@material-ui/core/Typography'
 import WalletLogin from '../WalletLogin/WalletLogin'
 
 const styles = theme => ({
-  icon: {
-    display: 'inline-block'
-  },
-  lights: {
-    width: '100px',
+  logo: {
+    width: '50px',
     height: 'auto',
     marginTop: '1px',
     [theme.breakpoints.down('xs')]: {
-      width: '75px'
+      width: '30px'
     }
   },
   nav: {
@@ -25,10 +23,22 @@ const styles = theme => ({
     padding: '0 90px'
   },
   bar: {
-    padding: '0 25%',
+    padding: '10px 25% 25px 25%',
     [theme.breakpoints.down('md')]: {
-      padding: '0px'
+      padding: '10px 0px 25px 0px'
     }
+  },
+  header: {
+    marginLeft: '15px'
+  },
+  title: {
+    fontFamily: 'Bungee',
+    fontSize: '1.7rem'
+  },
+  description: {
+    fontFamily: 'Rubik',
+    fontSize: '1rem',
+    fontWeight: '300'
   }
 })
 
@@ -46,18 +56,18 @@ class NavBar extends Component {
             alignItems='center'
             className={classes.bar}
           >
-            <Tooltip
-              placement='bottom'
-              title={<h color='#fff'
-                style={{ fontSize: '12px' }}
-                     >On your mark, get set, go!</h>}
+            <Grid item
+              style={{ display: 'flex' }}
             >
-              <Grid item>
-                <img src='/images/trafficlights.gif'
-                  className={classes.lights}
-                />
-              </Grid>
-            </Tooltip>
+              <img src='/images/logos/bridgelogo.svg'
+                className={classes.logo}
+              />
+              <Typography className={classes.header}>
+                <span className={classes.title}>EthEos</span>
+                <br />
+                <span className={classes.description}>The EOS ↔ ETH Bridge</span>
+              </Typography>
+            </Grid>
             <Grid item>
               <WalletLogin />
             </Grid>
