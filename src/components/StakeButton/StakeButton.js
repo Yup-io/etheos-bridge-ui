@@ -100,7 +100,7 @@ export default function StakeButton ({ classes, account, staked }) {
         message={error.msg}
       >
         <Alert severity={error.severity}
-          oncClose={handleSnackbarClose}
+          onClose={handleSnackbarClose}
           variant='filled'
           style={{ fontSize: 13, textTransform: 'none', maxWidth: 300 }}
         >
