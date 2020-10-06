@@ -33,12 +33,18 @@ const styles = theme => ({
   },
   title: {
     fontFamily: 'Bungee',
-    fontSize: '1.7rem'
+    fontSize: '1.7rem',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '1.2rem'
+    }
   },
   description: {
     fontFamily: 'Rubik',
     fontSize: '1rem',
-    fontWeight: '300'
+    fontWeight: '300',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '0.7rem'
+    }
   }
 })
 
