@@ -49,12 +49,11 @@ const styles = theme => ({
     width: '75px',
     fontSize: '1.5rem',
     color: '#fff',
-    fontWeight: '200'
+    fontWeight: '100'
   },
   textField: {
     width: '110px',
     fontSize: '1.2rem',
-    fontWeight: '300',
     color: '#fff',
     cssUnderline: {
       borderBottomColor: '#ffffff'

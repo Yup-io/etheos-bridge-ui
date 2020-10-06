@@ -103,7 +103,7 @@ const styles = theme => ({
   buttonIcon: {
     maxWidth: '3vw',
     width: '15px',
-    marginLeft: '5px'
+    marginRight: '5px'
   }
 })
 
@@ -169,10 +169,10 @@ const WalletLogin = (props) => {
                 handleDialogOpen()
               }}
             >
-              {account.substring(0, 8)}...
               <img className={classes.buttonIcon}
                 src='images/icons/metamask-fox.svg'
               />
+              {account.substring(0, 8)}...
             </Button>
           </Box>
         </Tooltip>
@@ -192,10 +192,10 @@ const WalletLogin = (props) => {
                 handleDialogOpen()
               }}
             >
-              {scatter.identity.name}
               <img className={classes.buttonIcon}
                 src='images/logos/yuplogowhite.png'
               />
+              {scatter.identity.name}
             </Button>
           </Box>
         </Tooltip>
