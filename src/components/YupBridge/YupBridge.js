@@ -32,19 +32,17 @@ const styles = theme => ({
     }
   },
   bridgeContainer: {
-    width: '40%',
-    minHeight: '75vh',
+    width: '35%',
+    minHeight: '70vh',
     background: '#434343',
     margin: 'auto',
     borderRadius: '20px',
-    [theme.breakpoints.down('lg')]: {
-      minHeight: '75vh'
-    },
     [theme.breakpoints.down('md')]: {
       width: '60%'
     },
     [theme.breakpoints.down('xs')]: {
-      width: '100%'
+      width: '100%',
+      minHeight: '50vh'
     }
   },
   grid: {
@@ -62,6 +60,9 @@ const styles = theme => ({
     [theme.breakpoints.down('md')]: {
       minWidth: '100px',
       padding: '0px 15px !important'
+    },
+    [theme.breakpoints.down('xs')]: {
+      minWidth: '75px'
     }
   },
   text: {
@@ -73,15 +74,15 @@ const styles = theme => ({
   textField: {
     width: '125px',
     fontSize: '1.2rem',
-    color: '#fff',
-    cssUnderline: {
-      borderBottomColor: '#ffffff'
-    },
+    fontFamily: 'Rubik',
     [theme.breakpoints.down('lg')]: {
       width: '110px'
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('sm')]: {
       width: '100px'
+    },
+    [theme.breakpoints.down('xs')]: {
+      width: '75px'
     }
   },
   formControl: {
@@ -92,16 +93,20 @@ const styles = theme => ({
     }
   },
   menu: {
-
+    fontFamily: 'Rubik !important',
+    textTransform: 'uppercase'
   },
   memoItem: {
     margin: 'auto'
   },
   acctField: {
-    width: '25vw',
-    color: '#fff',
+    width: '30vw',
+    fontFamily: 'Rubik',
     [theme.breakpoints.down('md')]: {
       width: '40vw'
+    },
+    [theme.breakpoints.down('xs')]: {
+      width: '80vw'
     }
   },
   feeGrid: {
@@ -117,26 +122,31 @@ const styles = theme => ({
     backgroundColor: '#04C399',
     width: '90%',
     height: '60px',
+    fontSize: '1rem',
     display: 'flex',
     borderRadius: '15px',
     margin: '7% auto auto auto',
+    bottom: '25px',
     '&:hover': {
       backgroundColor: '#04C399',
-      opacity: '0.7'
+      opacity: '0.8'
     },
     [theme.breakpoints.down('md')]: {
-      margin: '15% auto auto auto'
+      margin: '10% auto auto auto',
+      bottom: '10px'
     }
   }
 })
 
 const theme = createMuiTheme({
   palette: {
+    type: 'dark',
     primary: { main: '#fff' },
-    secondary: { main: '#1a1a1a' },
+    secondary: { main: '#fff' },
     third: { main: '#00eab7' }
   },
   overrides: {
+
   }
 })
 
@@ -176,7 +186,8 @@ const YupBridge = (props) => {
 
   const sendToken = () => {
     try {
-      const transferAmount = web3.utils.toBN(sendValue)
+      const totalFee = parseInt(numeral(transactFee + bridgeFee).format('0,0.00'))
+      const transferAmount = web3.utils.toBN(totalFee)
       const contract = new web3.eth.Contract(TransferABI, TOKEN_ADDRESS)
       const decimals = web3.utils.toBN(18)
       const value = transferAmount.mul(web3.utils.toBN(10).pow(decimals))
@@ -206,8 +217,9 @@ const YupBridge = (props) => {
   }
 
   const fetchTotalFee = () => {
-    const totalFee = transactFee + bridgeFee
-    return parseFloat(numeral(totalFee).format('0,0.00'))
+    const fee = transactFee + bridgeFee
+    const parseFee = parseFloat(numeral(fee).format('0,0.00'))
+    return parseFee
   }
 
   return (
@@ -266,6 +278,7 @@ const YupBridge = (props) => {
                     inputProps={{
                       className: classes.textField
                     }}
+                    style={{ textTransform: 'uppercase' }}
                     MenuProps={{
                      getContentAnchorEl: null,
                      anchorOrigin: {
@@ -394,7 +407,7 @@ const YupBridge = (props) => {
               <Grid item
                 xs={6}
               >
-                <Typography className={classes.feeText}>Bridge Fee</Typography>
+                <Typography className={classes.feeText}>Bridge Fee ({BRIDGE_FEE * 100}%)</Typography>
               </Grid>
               <Grid item
                 xs={6}

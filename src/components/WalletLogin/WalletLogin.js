@@ -23,6 +23,9 @@ const styles = theme => ({
     '&:hover': {
       backgroundColor: '#505050',
       boxShadow: '1px 1px 5px #00eab799, -1px -1px 5px #f890e7aa, inset -3px -3px 10px #6a6a6a33'
+    },
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '0.75rem'
     }
   },
   dialog: {
@@ -103,7 +106,8 @@ const styles = theme => ({
   buttonIcon: {
     maxWidth: '3vw',
     width: '15px',
-    marginRight: '5px'
+    marginRight: '5px',
+    display: 'flex'
   }
 })
 
@@ -169,10 +173,23 @@ const WalletLogin = (props) => {
                 handleDialogOpen()
               }}
             >
-              <img className={classes.buttonIcon}
-                src='images/icons/metamask-fox.svg'
-              />
-              {account.substring(0, 8)}...
+              <Grid container
+                alignItems='center'
+                direction='row'
+                justify='center'
+                spacing={0}
+              >
+                <Grid item
+                  style={{ marginBottom: '2px' }}
+                >
+                  <img className={classes.buttonIcon}
+                    src='images/icons/metamask-fox.svg'
+                  />
+                </Grid>
+                <Grid item>
+                  {account.substring(0, 8)}...
+                </Grid>
+              </Grid>
             </Button>
           </Box>
         </Tooltip>
@@ -192,10 +209,23 @@ const WalletLogin = (props) => {
                 handleDialogOpen()
               }}
             >
-              <img className={classes.buttonIcon}
-                src='images/logos/yuplogowhite.png'
-              />
-              {scatter.identity.name}
+              <Grid container
+                alignItems='center'
+                direction='row'
+                justify='center'
+                spacing={0}
+              >
+                <Grid item
+                  style={{ marginBottom: '3px' }}
+                >
+                  <img className={classes.buttonIcon}
+                    src='images/logos/yuplogowhite.png'
+                  />
+                </Grid>
+                <Grid item>
+                  {scatter.identity.name}
+                </Grid>
+              </Grid>
             </Button>
           </Box>
         </Tooltip>
