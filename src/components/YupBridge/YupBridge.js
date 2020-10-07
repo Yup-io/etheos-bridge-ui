@@ -14,10 +14,12 @@ import { useWeb3React } from '@web3-react/core'
 import Web3 from 'web3'
 import TransferABI from './abi/TransferABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
+import numeral from 'numeral'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 const TOKEN_ADDRESS = '0xc2118d4d90b274016cB7a54c03EF52E6c537D957'
 const TO_ADDRESS = '0xf8b41A391782Be39b7A8c36aA775c675A8368f53'
+const BRIDGE_FEE = 0.05
 
 const styles = theme => ({
   container: {
@@ -145,12 +147,17 @@ const YupBridge = (props) => {
 
   const [token, setToken] = useState('YUP')
   const [chain, setChain] = useState('ETH')
-  const [sendValue, setSendValue] = useState(0)
+  const [sendValue, setSendValue] = useState(0.0)
   const [memo, setMemo] = useState('')
   const [error, setError] = useState({ severity: null, msg: '', snackbar: false })
+  const [transactFee, setTransactFee] = useState(0.0)
+  const [bridgeFee, setBridgeFee] = useState(0.0)
 
   const handleBalanceChange = (e) => {
     setSendValue(e.target.value)
+    const transact = e.target.value ? parseFloat(e.target.value) : 0.0
+    setTransactFee(transact)
+    setBridgeFee(parseFloat(numeral(e.target.value * BRIDGE_FEE).format('0,0.00')))
     console.log('BALANCE: ' + sendValue)
   }
 
@@ -196,6 +203,11 @@ const YupBridge = (props) => {
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') return
     setError({ snackbar: false })
+  }
+
+  const fetchTotalFee = () => {
+    const totalFee = transactFee + bridgeFee
+    return parseFloat(numeral(totalFee).format('0,0.00'))
   }
 
   return (
@@ -369,7 +381,7 @@ const YupBridge = (props) => {
               >
                 <Typography className={classes.feeText}
                   style={{ textAlign: 'right' }}
-                >43.054 YUP</Typography>
+                >{transactFee} {token}</Typography>
               </Grid>
             </Grid>
 
@@ -389,7 +401,7 @@ const YupBridge = (props) => {
               >
                 <Typography className={classes.feeText}
                   style={{ textAlign: 'right' }}
-                >4.054 YUP</Typography>
+                >{bridgeFee} {token}</Typography>
               </Grid>
             </Grid>
 
@@ -411,7 +423,7 @@ const YupBridge = (props) => {
               >
                 <Typography className={classes.feeText}
                   style={{ color: '#fff', textAlign: 'right' }}
-                ><strong>47.054 YUP</strong></Typography>
+                ><strong>{fetchTotalFee()} {token}</strong></Typography>
               </Grid>
             </Grid>
           </MuiThemeProvider>
