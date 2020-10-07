@@ -23,8 +23,11 @@ const styles = theme => ({
     padding: '0 90px'
   },
   bar: {
-    padding: '10px 25% 25px 25%',
+    padding: '10px 25% 50px 25%',
     [theme.breakpoints.down('md')]: {
+      padding: '10px 0px 35px 0px'
+    },
+    [theme.breakpoints.down('sm')]: {
       padding: '10px 0px 25px 0px'
     }
   },

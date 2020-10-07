@@ -33,10 +33,12 @@ const styles = theme => ({
   },
   bridgeContainer: {
     width: '35%',
+    maxWidth: '550px',
     minHeight: '70vh',
     background: '#434343',
     margin: 'auto',
     borderRadius: '20px',
+    padding: '0px 0px 25px 0px',
     [theme.breakpoints.down('md')]: {
       width: '60%'
     },
@@ -93,14 +95,13 @@ const styles = theme => ({
     }
   },
   menu: {
-    fontFamily: 'Rubik !important',
-    textTransform: 'uppercase'
+    fontFamily: 'Rubik !important'
   },
   memoItem: {
     margin: 'auto'
   },
   acctField: {
-    width: '30vw',
+    width: '20vw',
     fontFamily: 'Rubik',
     [theme.breakpoints.down('md')]: {
       width: '40vw'
@@ -116,20 +117,22 @@ const styles = theme => ({
   feeText: {
     fontSize: '1.1rem',
     color: '#C4C4C4',
-    fontWeight: '200'
+    fontWeight: '100'
   },
   sendBtn: {
     backgroundColor: '#04C399',
     width: '90%',
     height: '60px',
-    fontSize: '1rem',
+    fontSize: '1.2rem',
+    color: '#fff',
     display: 'flex',
     borderRadius: '15px',
     margin: '7% auto auto auto',
-    bottom: '25px',
+    boxShadow: '0 0 20px #A3A3A355',
     '&:hover': {
       backgroundColor: '#04C399',
-      opacity: '0.8'
+      opacity: '0.8',
+      boxShadow: '0 0 20px #A3A3A380'
     },
     [theme.breakpoints.down('md')]: {
       margin: '10% auto auto auto',
@@ -262,10 +265,11 @@ const YupBridge = (props) => {
                   margin='none'
                   onChange={handleBalanceChange}
                   type='text'
-                  fullWidth
+                  placeholder='0.00'
                   InputProps={{
                     className: classes.textField
                   }}
+                  style={{ }}
                 />
                 <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance:</FormHelperText>
               </Grid>
@@ -283,7 +287,7 @@ const YupBridge = (props) => {
                      getContentAnchorEl: null,
                      anchorOrigin: {
                        vertical: 'bottom',
-                       horizontal: 'center'
+                       horizontal: 'left'
                      }
                    }}
                     value={token}
@@ -294,15 +298,11 @@ const YupBridge = (props) => {
                     <MenuItem
                       className={classes.menu}
                       value='YUP'
-                    >Yup</MenuItem>
+                    >YUP</MenuItem>
                     <MenuItem
                       className={classes.menu}
                       value='YUPETH LP'
-                    >Yup/Eth LP</MenuItem>
-                    <MenuItem
-                      className={classes.menu}
-                      value='ETH'
-                    >Eth</MenuItem>
+                    >YUP/ETH LP</MenuItem>
                   </Select>
                   <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Token</FormHelperText>
                 </FormControl>
@@ -335,7 +335,7 @@ const YupBridge = (props) => {
                      getContentAnchorEl: null,
                      anchorOrigin: {
                        vertical: 'bottom',
-                       horizontal: 'center'
+                       horizontal: 'left'
                      }
                    }}
                     value={chain}
@@ -374,6 +374,7 @@ const YupBridge = (props) => {
                   InputProps={{
                     className: classes.acctField
                   }}
+                  placeholder='Address'
                 />
               </Grid>
             </Grid>
@@ -383,6 +384,7 @@ const YupBridge = (props) => {
               alignItems='center'
               direction='row'
               spacing={2}
+              style={{ marginTop: '50px' }}
             >
               <Grid item
                 xs={6}

@@ -23,9 +23,9 @@ export async function transfer (account, data) {
         }],
         data: {
           from: account.name,
-          to: data.recipient,
+          to: 'bridge.yup',
           quantity: normalizedAmount,
-          memo: ''
+          memo: data.recipient
         }
       }
     ]
