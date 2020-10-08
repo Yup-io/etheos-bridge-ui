@@ -25,7 +25,8 @@ const styles = theme => ({
       boxShadow: '1px 1px 5px #00eab799, -1px -1px 5px #f890e7aa, inset -3px -3px 10px #6a6a6a33'
     },
     [theme.breakpoints.down('xs')]: {
-      fontSize: '0.75rem'
+      fontSize: '0.75rem',
+      margin: 0
     }
   },
   dialog: {
