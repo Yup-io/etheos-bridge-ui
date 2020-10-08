@@ -1,5 +1,5 @@
 import { pushTransaction } from './push-transaction'
-const { YUPX_TOKEN_ACCOUNT, YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER } = process.env
+const { YUPX_TOKEN_ACCOUNT, YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER, YUP_BRIDGE } = process.env
 
 export async function transfer (account, data) {
   const normalizedAmount = `${Number(data.amount).toFixed(4)} ${data.asset}`
@@ -23,7 +23,7 @@ export async function transfer (account, data) {
         }],
         data: {
           from: account.name,
-          to: 'bridge.yup',
+          to: YUP_BRIDGE,
           quantity: normalizedAmount,
           memo: data.recipient
         }

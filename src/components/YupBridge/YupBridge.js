@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { Grid, MenuItem, FormHelperText, Snackbar } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
@@ -16,8 +16,10 @@ import TransferABI from './abi/TransferABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
 
+import { transfer } from '../../eos/actions'
+
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const TOKEN_ADDRESS = '0xc2118d4d90b274016cB7a54c03EF52E6c537D957'
+const ETH_BRIDGE_ADDRESS = '0xc2118d4d90b274016cB7a54c03EF52E6c537D957'
 const TO_ADDRESS = '0xf8b41A391782Be39b7A8c36aA775c675A8368f53'
 const BRIDGE_FEE = 0.05
 
@@ -159,7 +161,10 @@ const YupBridge = (props) => {
   const { account } = useWeb3React()
 
   const [token, setToken] = useState('YUP')
-  const [chain, setChain] = useState('ETH')
+  const [chain, setChain] = useState('')
+  useEffect(() => {
+    setChain(account ? 'EOS' : 'ETH')
+  }, [account, scatter])
   const [sendValue, setSendValue] = useState(0.0)
   const [memo, setMemo] = useState('')
   const [error, setError] = useState({ severity: null, msg: '', snackbar: false })
@@ -187,26 +192,38 @@ const YupBridge = (props) => {
     setChain(e.target.value)
   }
 
-  const sendToken = () => {
+  const sendToken = async () => {
+    const totalFee = parseInt(numeral(transactFee + bridgeFee).format('0,0.00'))
     try {
-      const totalFee = parseInt(numeral(transactFee + bridgeFee).format('0,0.00'))
-      const transferAmount = web3.utils.toBN(totalFee)
-      const contract = new web3.eth.Contract(TransferABI, TOKEN_ADDRESS)
-      const decimals = web3.utils.toBN(18)
-      const value = transferAmount.mul(web3.utils.toBN(10).pow(decimals))
-      contract.methods.transfer(TO_ADDRESS, value).send({ from: account })
-        .on('error', () => {
-          setError({
-              severity: 'error',
-              msg: 'There was an error with your transaction. Please try again.',
-              snackbar: true })
+      // send with MetaMask
+      if (account) {
+        const transferAmount = web3.utils.toBN(totalFee)
+        const contract = new web3.eth.Contract(TransferABI, ETH_BRIDGE_ADDRESS)
+        const decimals = web3.utils.toBN(18)
+        const value = transferAmount.mul(web3.utils.toBN(10).pow(decimals))
+        contract.methods.transfer(TO_ADDRESS, value).send({ from: account })
+          .on('error', () => {
+            setError({
+                severity: 'error',
+                msg: 'There was an error with your transaction. Please try again.',
+                snackbar: true })
+            }
+          )
+          .then(() => setError({
+              severity: 'success',
+              msg: `You have successfully transfered ${sendValue} ${token}.`,
+              snackbar: true }))
+      } else if (scatterAccount) {
+          // send with Scatter
+          const txData = {
+            amount: totalFee,
+            asset: token,
+            recipient: memo
           }
-        )
-        .then(() => setError({
-            severity: 'success',
-            msg: `You have successfully transfered ${sendValue} ${token}.`,
-            snackbar: true }))
-    } catch (e) {
+          console.log('SCATTER TRANSFER: ', txData)
+          await transfer(scatterAccount, txData)
+        }
+      } catch (e) {
       setError({
           severity: 'error',
           msg: 'There was an error with your transaction. Please try again.',
@@ -346,10 +363,12 @@ const YupBridge = (props) => {
                     <MenuItem
                       className={classes.menu}
                       value='ETH'
+                      style={{ pointerEvents: account ? 'none' : '' }}
                     >Ethereum</MenuItem>
                     <MenuItem
                       className={classes.menu}
                       value='EOS'
+                      style={{ pointerEvents: scatterAccount ? 'none' : '' }}
                     >EOS</MenuItem>
                   </Select>
                 </FormControl>
