@@ -15,7 +15,7 @@ export async function transfer (account, data) {
         data: {}
       },
       {
-        account: data.asset === 'EOS' ? 'eosio.token' : YUPX_TOKEN_ACCOUNT,
+        account: data.asset === 'YUP/ETH LP' ? 'lptoken.yup' : YUPX_TOKEN_ACCOUNT,
         name: 'transfer',
         authorization: [{
           actor: account.name,
@@ -30,6 +30,8 @@ export async function transfer (account, data) {
       }
     ]
   }
+
+  console.log(tx)
 
   const txStatus = await pushTransaction(tx)
   return txStatus

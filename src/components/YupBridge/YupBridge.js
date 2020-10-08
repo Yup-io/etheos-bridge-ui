@@ -162,9 +162,7 @@ const theme = createMuiTheme({
   }
 })
 
-const YupBridge = (props) => {
-  const { classes, scatter, scatterAccount } = props
-  console.log('SCATTER: ', scatter, scatterAccount)
+const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const { account } = useWeb3React()
 
   const [token, setToken] = useState('YUP')
@@ -183,12 +181,10 @@ const YupBridge = (props) => {
     const transact = e.target.value ? parseFloat(e.target.value) : 0.0
     setTransactFee(transact)
     setBridgeFee(parseFloat(numeral(e.target.value * BRIDGE_FEE).format('0,0.00')))
-    console.log('BALANCE: ' + sendValue)
   }
 
   const handleAcctChange = (e) => {
     setMemo(e.target.value)
-    console.log('SEND TO: ' + memo)
   }
 
   const handleTokenChange = (e) => {
@@ -200,6 +196,7 @@ const YupBridge = (props) => {
   }
 
   const sendToken = async () => {
+    console.log(account, scatterAccount)
     const totalFee = parseInt(numeral(transactFee + bridgeFee).format('0,0.00'))
     try {
       // send with MetaMask
@@ -227,7 +224,6 @@ const YupBridge = (props) => {
             asset: token,
             recipient: memo
           }
-          console.log('SCATTER TRANSFER: ', txData)
           await transfer(scatterAccount, txData)
         }
       } catch (e) {
@@ -502,6 +498,7 @@ YupBridge.propTypes = {
 }
 
 const mapStateToProps = ({ scatterRequest }) => {
+  console.log('SCATTER: ', scatterRequest)
   return { ...scatterRequest }
 }
 
