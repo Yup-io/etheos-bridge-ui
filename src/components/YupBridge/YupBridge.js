@@ -149,7 +149,9 @@ const theme = createMuiTheme({
     third: { main: '#00eab7' }
   },
   overrides: {
-
+    container: {
+      fontFamily: 'Rubik'
+    }
   }
 })
 
