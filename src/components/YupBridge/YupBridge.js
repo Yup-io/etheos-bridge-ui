@@ -36,7 +36,6 @@ const styles = theme => ({
   bridgeContainer: {
     width: '35%',
     maxWidth: '550px',
-    minHeight: '70vh',
     background: '#434343',
     margin: 'auto',
     borderRadius: '20px',
@@ -44,54 +43,46 @@ const styles = theme => ({
     [theme.breakpoints.down('md')]: {
       width: '60%'
     },
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       width: '100%',
       minHeight: '50vh'
     }
   },
   grid: {
-    padding: '5% 7%'
+    paddingLeft: theme.spacing(5),
+    paddingRight: theme.spacing(5),
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(2),
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(3)
+    },
+    maxWidth: '100%'
   },
   textItem: {
     width: '75px'
-  },
-  gridItem: {
-    minWidth: '125px',
-    padding: '0px 25px !important',
-    [theme.breakpoints.down('lg')]: {
-      minWidth: '110px'
-    },
-    [theme.breakpoints.down('md')]: {
-      minWidth: '100px',
-      padding: '0px 15px !important'
-    },
-    [theme.breakpoints.down('xs')]: {
-      minWidth: '75px'
-    }
   },
   text: {
     width: '75px',
     fontSize: '1.5rem',
     color: '#fff',
-    fontWeight: '100'
+    fontWeight: '100',
+    fontFamily: 'Rubik'
   },
   textField: {
-    width: '125px',
-    fontSize: '1.2rem',
+    fontSize: '1.5rem',
+    lineHeight: '1.1875em',
     fontFamily: 'Rubik',
     [theme.breakpoints.down('lg')]: {
-      width: '110px'
     },
     [theme.breakpoints.down('sm')]: {
-      width: '100px'
+      fontSize: '1.2rem'
     },
     [theme.breakpoints.down('xs')]: {
-      width: '75px'
     }
   },
   formControl: {
     minWidth: 100,
-    marginRight: '10px',
+    marginRight: '0px',
     [theme.breakpoints.down('xs')]: {
       minWidth: 20
     }
@@ -100,26 +91,40 @@ const styles = theme => ({
     fontFamily: 'Rubik !important'
   },
   memoItem: {
-    margin: 'auto'
+    margin: 'auto',
+    padding: theme.spacing(4),
+    width: '100%'
   },
   acctField: {
-    width: '20vw',
     fontFamily: 'Rubik',
+    borderRadius: '15px',
     [theme.breakpoints.down('md')]: {
-      width: '40vw'
     },
     [theme.breakpoints.down('xs')]: {
-      width: '80vw'
     }
   },
   feeGrid: {
-    padding: '1% 7%',
-    margin: 'auto'
+    margin: 'auto',
+    paddingLeft: theme.spacing(5),
+    paddingRight: theme.spacing(5),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    [theme.breakpoints.down('xs')]: {
+      paddingLeft: theme.spacing(3),
+      paddingRight: theme.spacing(3),
+      paddingTop: theme.spacing(1),
+      paddingBottom: theme.spacing(1)
+    }
   },
   feeText: {
     fontSize: '1.1rem',
     color: '#C4C4C4',
-    fontWeight: '100'
+    fontWeight: '100',
+    fontFamily: 'Rubik, sans-serif',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '0.9rem'
+    }
+
   },
   sendBtn: {
     backgroundColor: '#04C399',
@@ -151,7 +156,9 @@ const theme = createMuiTheme({
     third: { main: '#00eab7' }
   },
   overrides: {
-
+    container: {
+      fontFamily: 'Rubik, sans-serif'
+    }
   }
 })
 
@@ -263,19 +270,26 @@ const YupBridge = (props) => {
             <Grid container
               className={classes.grid}
               alignItems='center'
+              justifyContent='flex-start'
               direction='row'
-              spacing={2}
+              spacing={1}
             >
               <Grid item
+                xs={3}
+                sm={2}
                 className={classes.textItem}
-                style={{ marginBottom: '15px' }}
+                style={{ marginBottom: '20px',
+                [theme.breakpoints.down('sm')]: {
+                  height: '100%'
+                } }}
               >
                 <Typography className={classes.text}>
                   Send
                 </Typography>
               </Grid>
               <Grid item
-                className={classes.gridItem}
+                xs={4}
+                sm={3}
               >
                 <TextField
                   autoFocus
@@ -291,15 +305,14 @@ const YupBridge = (props) => {
                 <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance:</FormHelperText>
               </Grid>
               <Grid item
-                className={classes.gridItem}
+                xs={5}
+                sm={3}
               >
                 <FormControl className={classes.formControl}>
                   <Select
-                    className={classes.textField}
                     inputProps={{
                       className: classes.textField
                     }}
-                    style={{ textTransform: 'uppercase' }}
                     MenuProps={{
                      getContentAnchorEl: null,
                      anchorOrigin: {
@@ -330,9 +343,10 @@ const YupBridge = (props) => {
               className={classes.grid}
               alignItems='center'
               direction='row'
-              spacing={2}
             >
               <Grid item
+                xs={3}
+                sm={2}
                 className={classes.textItem}
               >
                 <Typography className={classes.text}>
@@ -340,7 +354,8 @@ const YupBridge = (props) => {
                 </Typography>
               </Grid>
               <Grid item
-                className={classes.gridItem}
+                xs={3}
+                sm={2}
               >
                 <FormControl className={classes.formControl}>
                   <Select
@@ -359,6 +374,7 @@ const YupBridge = (props) => {
                     onChange={handleChainChange}
                     margin='none'
                     size='medium'
+                    style={{ paddingTop: '2px' }}
                   >
                     <MenuItem
                       className={classes.menu}
@@ -374,19 +390,18 @@ const YupBridge = (props) => {
                 </FormControl>
               </Grid>
             </Grid>
-
             <Grid container
-              className={classes.grid}
-              alignItems='center'
-              direction='row'
-              spacing={2}
+              spacing={0}
             >
               <Grid item
-                className={classes.memoItem}
+                classes={{
+                  root: classes.memoItem
+                }}
               >
                 <TextField
                   autoFocus
                   margin='none'
+                  variant='outlined'
                   onChange={handleAcctChange}
                   type='text'
                   fullWidth
@@ -402,8 +417,7 @@ const YupBridge = (props) => {
               className={classes.feeGrid}
               alignItems='center'
               direction='row'
-              spacing={2}
-              style={{ marginTop: '50px' }}
+              style={{ marginTop: '20px', fontFamily: 'Rubik' }}
             >
               <Grid item
                 xs={6}
@@ -423,7 +437,6 @@ const YupBridge = (props) => {
               className={classes.feeGrid}
               alignItems='center'
               direction='row'
-              spacing={2}
             >
               <Grid item
                 xs={6}
@@ -443,7 +456,6 @@ const YupBridge = (props) => {
               className={classes.feeGrid}
               alignItems='center'
               direction='row'
-              spacing={2}
             >
               <Grid item
                 xs={6}
