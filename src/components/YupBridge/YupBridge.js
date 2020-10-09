@@ -19,8 +19,8 @@ import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const ETH_BRIDGE_ADDRESS = '0xc2118d4d90b274016cB7a54c03EF52E6c537D957'
-const TO_ADDRESS = '0xf8b41A391782Be39b7A8c36aA775c675A8368f53'
+// NEEDS TO BE UPDATED
+const ETH_TOKEN_CONTRACT = '0xc2118d4d90b274016cB7a54c03EF52E6c537D957'
 const BRIDGE_FEE = 0.05
 
 const styles = theme => ({
@@ -180,7 +180,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     setSendValue(e.target.value)
     const transact = e.target.value ? parseFloat(e.target.value) : 0.0
     setTransactFee(transact)
-    setBridgeFee(parseFloat(numeral(e.target.value * BRIDGE_FEE).format('0,0.00')))
+    setBridgeFee(+(e.target.value * BRIDGE_FEE).toFixed(2))
   }
 
   const handleAcctChange = (e) => {
@@ -196,16 +196,16 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }
 
   const sendToken = async () => {
-    console.log(account, scatterAccount)
-    const totalFee = parseInt(numeral(transactFee + bridgeFee).format('0,0.00'))
+    const totalFee = parseFloat(transactFee + bridgeFee)
     try {
       // send with MetaMask
       if (account) {
-        const transferAmount = web3.utils.toBN(totalFee)
-        const contract = new web3.eth.Contract(TransferABI, ETH_BRIDGE_ADDRESS)
-        const decimals = web3.utils.toBN(18)
-        const value = transferAmount.mul(web3.utils.toBN(10).pow(decimals))
-        contract.methods.transfer(TO_ADDRESS, value).send({ from: account })
+        let transferAmount = web3.utils.toWei(totalFee.toString())
+        transferAmount = web3.utils.toBN(transferAmount)
+        const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
+        const value = transferAmount.mul(web3.utils.toBN(10))
+        const memoByte = '0x' + Buffer.from(memo).toString('hex')
+        contract.methods.sendToken(value, memoByte).send({ from: account })
           .on('error', () => {
             setError({
                 severity: 'error',
@@ -298,7 +298,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                   }}
                   style={{ }}
                 />
-                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance:</FormHelperText>
+                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance</FormHelperText>
               </Grid>
               <Grid item
                 xs={5}
@@ -327,7 +327,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                     >YUP</MenuItem>
                     <MenuItem
                       className={classes.menu}
-                      value='YUPETH LP'
+                      value='YUPETH'
                     >YUP/ETH LP</MenuItem>
                   </Select>
                   <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Token</FormHelperText>
@@ -498,7 +498,6 @@ YupBridge.propTypes = {
 }
 
 const mapStateToProps = ({ scatterRequest }) => {
-  console.log('SCATTER: ', scatterRequest)
   return { ...scatterRequest }
 }
 

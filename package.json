@@ -28,6 +28,7 @@
     "axios": "^0.18.0",
     "babel-plugin-emotion": "^10.0.33",
     "bfj": "6.1.1",
+    "buffer": "^5.6.0",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.6.1",
     "css-loader": "1.0.0",
