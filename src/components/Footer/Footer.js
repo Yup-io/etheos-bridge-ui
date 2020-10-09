@@ -7,6 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
 const CONTRACTS_LINK = '#'
+const EOS_LINK = '#'
 const DISCORD_LINK = 'https://discord.gg/KED2nHS'
 const YUP_LINK = 'http://yup.io/'
 
@@ -64,7 +65,7 @@ class Footer extends Component {
           <DialogTitle id='form-dialog-title'>ETHEOS Info</DialogTitle>
           <DialogContent>
             <DialogContentText className={classes.disclaimerText}>
-              ⚠️ This is experimental technology. Use with caution.
+              ⚠️ This is highly experimental technology. Please use with caution and at your own risk.
             </DialogContentText>
             <DialogContentText className={classes.disclaimerText}>
               <strong style={{ color: 'white' }}>Contracts:</strong>
@@ -77,7 +78,7 @@ class Footer extends Component {
                 target='_blank'
                 className={classes.link}
               >Smart Contract Code</a>
-              <a href='#'
+              <a href={EOS_LINK}
                 target='_blank'
                 className={classes.link}
               >EOS</a>

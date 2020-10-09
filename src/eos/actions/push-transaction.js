@@ -11,32 +11,37 @@ const rpc = new JsonRpc(EOS_API, { fetch })
 const api = new Api({ rpc, signatureProvider })
 
 export async function pushTransaction (txData) {
+  console.log(txData)
   if (wallet.scatter.isExtension) {
-  const { transaction: signedTx } = await wallet.eos.transaction(txData, {
-    blocksBehind: 3,
-    expireSeconds: 60,
-    broadcast: false
-  })
+  try {
+    const { transaction: signedTx } = await wallet.eos.transaction(txData, {
+      blocksBehind: 3,
+      expireSeconds: 60,
+      broadcast: false
+    })
 
-  const { transaction, signatures } = signedTx
+    const { transaction, signatures } = signedTx
 
-  const serializedTx = api.serializeTransaction(transaction)
-  const signBuf = Buffer.concat([
-    Buffer.from(EOS_CHAINID, 'hex'), Buffer.from(serializedTx), Buffer.from(new Uint8Array(32))
-  ])
+    const serializedTx = api.serializeTransaction(transaction)
+    const signBuf = Buffer.concat([
+      Buffer.from(EOS_CHAINID, 'hex'), Buffer.from(serializedTx), Buffer.from(new Uint8Array(32))
+    ])
 
-  const signedDataHash = crypto.createHash('sha256').update(signBuf).digest('hex')
+    const signedDataHash = crypto.createHash('sha256').update(signBuf).digest('hex')
 
-  const txStatus = (await axios.post(`${BACKEND_API}/transaction`, {
-    transaction,
-    signature: signatures[0],
-    signedDataHash
-  })).data
-  return txStatus
-} else {
-  return wallet.eos.transact(txData, {
-    blocksBehind: 3,
-    expireSeconds: 30
-  })
-}
+    const txStatus = (await axios.post(`${BACKEND_API}/transaction`, {
+      transaction,
+      signature: signatures[0],
+      signedDataHash
+    })).data
+    return txStatus
+  } catch (error) {
+      console.log(error)
+  }
+  } else {
+    return wallet.eos.transact(txData, {
+      blocksBehind: 3,
+      expireSeconds: 30
+    })
+  }
 }

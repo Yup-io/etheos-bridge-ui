@@ -200,10 +200,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     try {
       // send with MetaMask
       if (account) {
-        let transferAmount = web3.utils.toWei(totalFee.toString())
-        transferAmount = web3.utils.toBN(transferAmount)
+        const transferAmount = web3.utils.toWei(totalFee.toString())
         const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
-        const value = transferAmount.mul(web3.utils.toBN(10))
+        const value = web3.utils.toBN(transferAmount)
         const memoByte = '0x' + Buffer.from(memo).toString('hex')
         contract.methods.sendToken(value, memoByte).send({ from: account })
           .on('error', () => {
@@ -221,7 +220,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           // send with Scatter
           const txData = {
             amount: totalFee,
-            asset: token,
+            asset: 'YUPX',
             recipient: memo
           }
           await transfer(scatterAccount, txData)
@@ -266,7 +265,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             <Grid container
               className={classes.grid}
               alignItems='center'
-              justifyContent='flex-start'
+              justifycontent='flex-start'
               direction='row'
               spacing={1}
             >
