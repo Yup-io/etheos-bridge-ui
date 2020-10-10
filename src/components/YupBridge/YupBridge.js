@@ -20,7 +20,7 @@ import { transfer } from '../../eos/actions'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
-const ETH_TOKEN_CONTRACT = '0xc2118d4d90b274016cB7a54c03EF52E6c537D957'
+const ETH_TOKEN_CONTRACT = '0x69bBC3F8787d573F1BBDd0a5f40C7bA0Aee9BCC9'
 const { BRIDGE_FEE } = process.env
 
 const styles = theme => ({
@@ -326,7 +326,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                     <MenuItem
                       className={classes.menu}
                       value='YUPETH'
-                    >YUP/ETH LP</MenuItem>
+                    >YUP-ETH LP</MenuItem>
                   </Select>
                   <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Token</FormHelperText>
                 </FormControl>

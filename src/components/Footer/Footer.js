@@ -6,9 +6,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
-const CONTRACTS_LINK = '#'
-const EOS_LINK = '#'
-const DISCORD_LINK = 'https://discord.gg/KneTzU4'
+// const CONTRACTS_LINK = '#'
+const DISCORD_LINK = 'https://discord.gg/KED2nHS'
 const YUP_LINK = 'http://yup.io/'
 
 const styles = theme => ({
@@ -58,7 +57,8 @@ class Footer extends Component {
             style: {
               backgroundColor: '#1A1A1A',
               color: '#F7F7F7',
-              width: '400px'
+              width: '400px',
+              fontFamily: 'Rubik, sans serif'
             }
           }}
         >
@@ -71,17 +71,24 @@ class Footer extends Component {
               <strong style={{ color: 'white' }}>Contracts:</strong>
             </DialogContentText>
             <DialogContentText className={classes.disclaimerText}>
+              <ul>
+                <li>
+                  <a className={classes.link}
+                    href='https://bloks.io/account/bridge.yup'
+                  >YUP Bridge Contract on EOS: bridge.yup</a>
+                </li>
+                <li>
+                  <a className={classes.link}
+                    href='https://bloks.io/account/lpbridge.yup'
+                  >YUP-ETH Bridge Contract on EOS: lpbridge.yup</a>
+                </li>
+                <li>
+                  <a className={classes.link}
+                    href='https://etherscan.io/address/0x8570B51081f4E8E7C71CF6788f922CCf9458A954'
+                  >YUP Bridge Contract on Ethereum: 0x8570B51081f4E8E7C71CF6788f922CCf9458A954</a>
+                </li>
+              </ul>
               The smart contracts were initially built by DAPP Network and the LiquidApps team, but are tweaked depending on the token being traded.
-            </DialogContentText>
-            <DialogContentText className={classes.disclaimerText}>
-              <a href={CONTRACTS_LINK}
-                target='_blank'
-                className={classes.link}
-              >Smart Contract Code</a>
-              <a href={EOS_LINK}
-                target='_blank'
-                className={classes.link}
-              >EOS</a>
             </DialogContentText>
           </DialogContent>
         </Dialog>
@@ -91,22 +98,23 @@ class Footer extends Component {
             href='#'
             className={classes.link}
           >
-            About</a>
-          <a target='_blank'
-            href={CONTRACTS_LINK}
-            className={classes.link}
-          >
-            Smart Contracts</a>
+            About/Contracts</a>
           <a target='_blank'
             href={DISCORD_LINK}
             className={classes.link}
           >
             Discord</a>
           <a target='_blank'
+            href='https://yupprotocol.org'
+            className={classes.link}
+          >
+            Yup Protocol</a>
+
+          <a target='_blank'
             href={YUP_LINK}
             className={classes.link}
           >
-            Yup</a>
+            Yup.io</a>
         </div>
       </>
     )
