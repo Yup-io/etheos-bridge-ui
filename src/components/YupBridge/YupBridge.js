@@ -206,7 +206,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const transferAmount = web3.utils.toWei(totalFee.toString())
         const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
         const value = web3.utils.toBN(transferAmount)
-        const memoByte = web3.utils.fromAscii(memo)
+        const memoByte = web3.utils.asciiToHex(memo)
         try {
           contract.methods.sendToken(value, memoByte).send({ from: account })
         } catch (error) {
@@ -226,8 +226,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       } else if (scatterAccount) {
           // send with Scatter
           const txData = {
-            amount: totalFee,
-            asset: 'YUPX',
+            amount: sendBal,
+            asset: token,
             recipient: memo
           }
           await transfer(scatterAccount, txData)

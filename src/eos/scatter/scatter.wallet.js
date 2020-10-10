@@ -33,6 +33,7 @@ class ScatterWallet {
 
       this.connected = connected
       this.scatter = ScatterJS.scatter
+      console.log(this.scatter)
       window.scatter = null
 
       ScatterJS.plugins(new ScatterEOS())
@@ -51,7 +52,7 @@ class ScatterWallet {
           authority: identity.accounts[0].authority
         }
 
-        window.analytics.identify({ userId: this.identity.name })
+        // window.analytics.identify({ userId: this.identity.name })
 
         // Add new account to backend if it doesn't exist
         try {
@@ -69,7 +70,7 @@ class ScatterWallet {
         }
       }
     } catch (err) {
-        console.error('SCATTER DETECT ERROR: ' + JSON.stringify(err, null, 2))
+        console.error('SCATTER DETECT ERROR: ', err)
       }
   }
 }
