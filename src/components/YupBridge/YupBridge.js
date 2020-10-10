@@ -225,7 +225,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           // send with Scatter
           const txData = {
             amount: totalFee,
-            asset: token,
+            asset: 'YUPX',
             recipient: memo
           }
           await transfer(scatterAccount, txData)
