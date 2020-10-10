@@ -21,7 +21,7 @@ import { transfer } from '../../eos/actions'
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
 const ETH_TOKEN_CONTRACT = '0xc2118d4d90b274016cB7a54c03EF52E6c537D957'
-const BRIDGE_FEE = 0.05
+const { BRIDGE_FEE } = process.env
 
 const styles = theme => ({
   container: {
@@ -169,18 +169,23 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [chain, setChain] = useState('')
   useEffect(() => {
     setChain(account ? 'EOS' : 'ETH')
+    const bridge = account ? 0.0000 : BRIDGE_FEE
+    setBridgeFee(bridge)
   }, [account, scatter])
-  const [sendValue, setSendValue] = useState(0.0)
+  const [sendBal, setSendBal] = useState(0.0000)
   const [memo, setMemo] = useState('')
-  const [error, setError] = useState({ severity: null, msg: '', snackbar: false })
-  const [transactFee, setTransactFee] = useState(0.0)
-  const [bridgeFee, setBridgeFee] = useState(0.0)
+  const [error, setError] = useState({ severity: 'error', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
+  const [bridgeFee, setBridgeFee] = useState(0.0000)
+  const [totalFee, setTotalFee] = useState(0.0000)
 
   const handleBalanceChange = (e) => {
-    setSendValue(e.target.value)
-    const transact = e.target.value ? parseFloat(e.target.value) : 0.0
-    setTransactFee(transact)
-    setBridgeFee(+(e.target.value * BRIDGE_FEE).toFixed(2))
+    const bal = parseFloat(e.target.value)
+    setSendBal(bal)
+    const bridge = account ? 0.0000 : BRIDGE_FEE
+    setBridgeFee(bridge)
+    const total = chain === account ? bal : bal + parseFloat(bridgeFee)
+    const parseFee = parseFloat(numeral(total).format('0,0.0000'))
+    setTotalFee(parseFee)
   }
 
   const handleAcctChange = (e) => {
@@ -196,8 +201,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }
 
   const sendToken = async () => {
-    const totalFee = parseFloat(transactFee + bridgeFee)
     try {
+      console.log(scatter, scatterAccount)
       // send with MetaMask
       if (account) {
         const transferAmount = web3.utils.toWei(totalFee.toString())
@@ -214,13 +219,13 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           )
           .then(() => setError({
               severity: 'success',
-              msg: `You have successfully transfered ${sendValue} ${token}.`,
+              msg: `You have successfully transfered ${sendBal} ${token}.`,
               snackbar: true }))
       } else if (scatterAccount) {
           // send with Scatter
           const txData = {
             amount: totalFee,
-            asset: 'YUPX',
+            asset: token,
             recipient: memo
           }
           await transfer(scatterAccount, txData)
@@ -238,16 +243,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     setError({ snackbar: false })
   }
 
-  const fetchTotalFee = () => {
-    const fee = transactFee + bridgeFee
-    const parseFee = parseFloat(numeral(fee).format('0,0.00'))
-    return parseFee
-  }
-
   return (
     <>
       <Snackbar open={error.snackbar}
-        autoHideDuration={3000}
+        autoHideDuration={4000}
         onClose={handleSnackbarClose}
         message={error.msg}
       >
@@ -412,31 +411,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               className={classes.feeGrid}
               alignItems='center'
               direction='row'
-              style={{ marginTop: '20px', fontFamily: 'Rubik' }}
+              style={{ display: account ? 'none' : '' }}
             >
               <Grid item
                 xs={6}
               >
-                <Typography className={classes.feeText}>Transaction Fee</Typography>
-              </Grid>
-              <Grid item
-                xs={6}
-              >
-                <Typography className={classes.feeText}
-                  style={{ textAlign: 'right' }}
-                >{transactFee} {token}</Typography>
-              </Grid>
-            </Grid>
-
-            <Grid container
-              className={classes.feeGrid}
-              alignItems='center'
-              direction='row'
-            >
-              <Grid item
-                xs={6}
-              >
-                <Typography className={classes.feeText}>Bridge Fee ({BRIDGE_FEE * 100}%)</Typography>
+                <Typography className={classes.feeText}>Bridge Fee</Typography>
               </Grid>
               <Grid item
                 xs={6}
@@ -464,13 +444,13 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               >
                 <Typography className={classes.feeText}
                   style={{ color: '#fff', textAlign: 'right' }}
-                ><strong>{fetchTotalFee()} {token}</strong></Typography>
+                ><strong>{totalFee} {token}</strong></Typography>
               </Grid>
             </Grid>
           </MuiThemeProvider>
 
           <Button onClick={() => {
-            if (isNaN(sendValue)) {
+            if (isNaN(sendBal)) {
               setError({
                   severity: 'warning',
                   msg: 'Please enter a valid staking amount.',

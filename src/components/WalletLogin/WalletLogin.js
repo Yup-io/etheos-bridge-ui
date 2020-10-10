@@ -143,7 +143,7 @@ const WalletLogin = (props) => {
 
   const checkScatter = () => {
     (async () => {
-      if (scatter == null || scatterAccount == null) {
+      if (scatter == null && scatterAccount == null) {
         try {
           await scatterWallet.detect(updateScatter, scatterInstall)
         } catch (err) {
@@ -314,7 +314,7 @@ const WalletLogin = (props) => {
                       alignItems='center'
                     >
                       <Grid item>
-                        Yup
+                        Yup/Scatter
                       </Grid>
                       <Grid item>
                         <img className={classes.walletIcon}

@@ -8,7 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 
 const CONTRACTS_LINK = '#'
 const EOS_LINK = '#'
-const DISCORD_LINK = 'https://discord.gg/KED2nHS'
+const DISCORD_LINK = 'https://discord.gg/KneTzU4'
 const YUP_LINK = 'http://yup.io/'
 
 const styles = theme => ({
