@@ -34,6 +34,7 @@ export async function pushTransaction (txData) {
       signature: signatures[0],
       signedDataHash
     })).data
+    console.log('TX STATUS: ', txStatus)
     return txStatus
   } catch (error) {
       console.log(error)
