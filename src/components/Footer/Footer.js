@@ -9,6 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 // const CONTRACTS_LINK = '#'
 const DISCORD_LINK = 'https://discord.gg/KED2nHS'
 const YUP_LINK = 'http://yup.io/'
+const UNISWAP_LINK = 'https://info.uniswap.org/pair/0x69bBC3F8787d573F1BBDd0a5f40C7bA0Aee9BCC9'
 
 const styles = theme => ({
   footer: {
@@ -99,6 +100,11 @@ class Footer extends Component {
             className={classes.link}
           >
             About/Contracts</a>
+          <a target='_blank'
+            href={UNISWAP_LINK}
+            className={classes.link}
+          >
+            Buy YUP</a>
           <a target='_blank'
             href={DISCORD_LINK}
             className={classes.link}
