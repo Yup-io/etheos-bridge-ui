@@ -20,8 +20,7 @@ import { transfer } from '../../eos/actions'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
-const ETH_TOKEN_CONTRACT = '0x69bBC3F8787d573F1BBDd0a5f40C7bA0Aee9BCC9'
-const { BRIDGE_FEE } = process.env
+const { ETH_TOKEN_CONTRACT, BRIDGE_FEE } = process.env
 
 const styles = theme => ({
   container: {
@@ -202,25 +201,28 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const sendToken = async () => {
     try {
-      console.log(scatter, scatterAccount)
       // send with MetaMask
       if (account) {
         const transferAmount = web3.utils.toWei(totalFee.toString())
         const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
         const value = web3.utils.toBN(transferAmount)
-        const memoByte = '0x' + Buffer.from(memo).toString('hex')
-        contract.methods.sendToken(value, memoByte).send({ from: account })
-          .on('error', () => {
-            setError({
-                severity: 'error',
-                msg: 'There was an error with your transaction. Please try again.',
-                snackbar: true })
-            }
-          )
-          .then(() => setError({
-              severity: 'success',
-              msg: `You have successfully transfered ${sendBal} ${token}.`,
-              snackbar: true }))
+        const memoByte = web3.utils.fromAscii(memo)
+        try {
+          contract.methods.sendToken(value, memoByte).send({ from: account })
+        } catch (error) {
+          console.log(error)
+        }
+          // .on('error', () => {
+          //   setError({
+          //       severity: 'error',
+          //       msg: 'There was an error with your transaction. Please try again.',
+          //       snackbar: true })
+          //   }
+          // )
+          // .then(() => setError({
+          //     severity: 'success',
+          //     msg: `You have successfully transfered ${sendBal} ${token}.`,
+          //     snackbar: true }))
       } else if (scatterAccount) {
           // send with Scatter
           const txData = {

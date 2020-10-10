@@ -195,7 +195,7 @@ const WalletLogin = (props) => {
           </Box>
         </Tooltip>
       )}
-      {scatter && scatter.identity && (
+      {scatter && scatter.identity && scatterAccount && (
         <Tooltip
           placement='bottom'
           title={<h2 color='#fff'
@@ -224,7 +224,7 @@ const WalletLogin = (props) => {
                   />
                 </Grid>
                 <Grid item>
-                  {scatter.identity.name}
+                  {scatter.isExtension ? scatter.identity.name : scatterAccount.name}
                 </Grid>
               </Grid>
             </Button>
@@ -280,6 +280,29 @@ const WalletLogin = (props) => {
                   <Button className={classes.blockButton}
                     variant='outlined'
                     onClick={() => {
+                      checkScatter()
+                    }}
+                  >
+                    <Grid container
+                      direction='row'
+                      justify='space-between'
+                      alignItems='center'
+                    >
+                      <Grid item>
+                        Yup/Scatter
+                      </Grid>
+                      <Grid item>
+                        <img className={classes.walletIcon}
+                          src='images/logos/yuplogowhite.png'
+                        />
+                      </Grid>
+                    </Grid>
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button className={classes.blockButton}
+                    variant='outlined'
+                    onClick={() => {
                       setActivatingConnector(injected)
                       activate(injected)
                       handleDialogClose()
@@ -296,29 +319,6 @@ const WalletLogin = (props) => {
                       <Grid item>
                         <img className={classes.walletIcon}
                           src='images/icons/metamask-fox.svg'
-                        />
-                      </Grid>
-                    </Grid>
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button className={classes.blockButton}
-                    variant='outlined'
-                    onClick={() => {
-                      checkScatter()
-                    }}
-                  >
-                    <Grid container
-                      direction='row'
-                      justify='space-between'
-                      alignItems='center'
-                    >
-                      <Grid item>
-                        Yup/Scatter
-                      </Grid>
-                      <Grid item>
-                        <img className={classes.walletIcon}
-                          src='images/logos/yuplogowhite.png'
                         />
                       </Grid>
                     </Grid>

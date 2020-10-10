@@ -19,5 +19,26 @@
             }
         ],
         "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_value",
+                "type": "uint256"
+            },
+            {
+                "name": "_to",
+                "type": "address"
+            }
+        ],
+        "name": "sendToken",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "type": "function"
     }
 ]
