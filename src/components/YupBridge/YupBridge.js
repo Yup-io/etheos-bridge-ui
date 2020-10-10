@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import { Grid, MenuItem, FormHelperText, Snackbar } from '@material-ui/core'
+import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip } from '@material-ui/core'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Select from '@material-ui/core/Select'
@@ -296,7 +296,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                   }}
                   style={{ }}
                 />
-                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance</FormHelperText>
+                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance:</FormHelperText>
               </Grid>
               <Grid item
                 xs={5}
@@ -445,6 +445,31 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                 <Typography className={classes.feeText}
                   style={{ color: '#fff', textAlign: 'right' }}
                 ><strong>{totalFee} {token}</strong></Typography>
+              </Grid>
+            </Grid>
+
+            <Grid container
+              className={classes.feeGrid}
+              alignItems='center'
+              direction='row'
+              style={{ opacity: '0.3' }}
+            >
+              <Grid item
+                xs={6}
+              >
+                <Tooltip placement='bottom-start'
+                  title='In order to ensure stability of the bridge, there needs to be a minimum set for bridging'
+                >
+                  <Typography className={classes.feeText}>Minimum to bridge
+                  </Typography>
+                </Tooltip>
+              </Grid>
+              <Grid item
+                xs={6}
+              >
+                <Typography className={classes.feeText}
+                  style={{ textAlign: 'right' }}
+                >10 {token}</Typography>
               </Grid>
             </Grid>
           </MuiThemeProvider>
