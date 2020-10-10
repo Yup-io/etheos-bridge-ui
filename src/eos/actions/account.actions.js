@@ -15,7 +15,7 @@ export async function transfer (account, data) {
         data: {}
       },
       {
-        account: data.asset === 'YUP' ? YUP_ETH_CONTRACT : LP_ETH_CONTRACT,
+        account: data.asset === 'YUPX' ? YUP_ETH_CONTRACT : LP_ETH_CONTRACT,
         name: 'transfer',
         authorization: [{
           actor: account.name,
@@ -28,15 +28,13 @@ export async function transfer (account, data) {
         data: {
           ram_payer: YUP_ACCOUNT_MANAGER,
           from: account.name,
-          to: data.asset === 'YUP' ? YUP_BRIDGE : LP_BRIDGE,
+          to: data.asset === 'YUPX' ? YUP_BRIDGE : LP_BRIDGE,
           quantity: normalizedAmount,
           memo: data.recipient
         }
       }
     ]
   }
-
-  console.log(tx)
 
   const txStatus = await pushTransaction(tx)
   return txStatus
