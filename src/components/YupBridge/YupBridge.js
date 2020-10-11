@@ -473,7 +473,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           </MuiThemeProvider>
 
           <Button onClick={() => {
-            if (isNaN(sendBal) || totalFee < MINIMUM_BRIDGE) {
+            if (isNaN(sendBal)) {
               setError({
                   severity: 'warning',
                   msg: 'Please enter a valid staking amount.',
