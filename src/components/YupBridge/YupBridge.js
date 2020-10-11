@@ -14,15 +14,12 @@ import { useWeb3React } from '@web3-react/core'
 import Web3 from 'web3'
 import TransferABI from './abi/TransferABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
-import numeral from 'numeral'
 
 import { transfer } from '../../eos/actions'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
-const { ETH_TOKEN_CONTRACT, BRIDGE_FEE } = process.env
-// fetch from api
-const MINIMUM_BRIDGE = 10
+const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, MINIMUM_BRIDGE } = process.env
 
 const styles = theme => ({
   container: {
@@ -170,23 +167,22 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [chain, setChain] = useState('')
   useEffect(() => {
     setChain(account ? 'EOS' : 'ETH')
-    const bridge = account ? 0.0000 : BRIDGE_FEE
+    const bridge = account ? 0.0 : BRIDGE_FEE
     setBridgeFee(bridge)
   }, [account, scatter])
-  const [sendBal, setSendBal] = useState(0.0000)
+  const [sendBal, setSendBal] = useState(0.0)
   const [memo, setMemo] = useState('')
   const [error, setError] = useState({ severity: 'error', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
-  const [bridgeFee, setBridgeFee] = useState(0.0000)
-  const [totalFee, setTotalFee] = useState(0.0000)
+  const [bridgeFee, setBridgeFee] = useState(0.0)
+  const [totalFee, setTotalFee] = useState(0.0)
 
   const handleBalanceChange = (e) => {
-    const bal = parseFloat(e.target.value)
+    const bal = parseFloat(e.target.value) || 0.0
     setSendBal(bal)
-    const bridge = account ? 0.0000 : BRIDGE_FEE
+    const bridge = account ? 0.0 : BRIDGE_FEE
     setBridgeFee(bridge)
     const total = chain === account ? bal : bal + parseFloat(bridgeFee)
-    const parseFee = parseFloat(numeral(total).format('0,0.0000'))
-    setTotalFee(parseFee)
+    setTotalFee(total)
   }
 
   const handleAcctChange = (e) => {
@@ -474,7 +470,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             </Grid>
           </MuiThemeProvider>
 
-          <Button style={{ pointerEvents: (sendBal >= MINIMUM_BRIDGE) ? 'all' : 'none' }}
+          <Button style={{ pointerEvents: (sendBal < MINIMUM_BRIDGE) ? 'none' : '' }}
             onClick={() => {
             if (isNaN(sendBal)) {
               setError({
