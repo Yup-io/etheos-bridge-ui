@@ -5,7 +5,7 @@ import { JsSignatureProvider } from 'eosjs2/dist/eosjs-jssig'
 import fetch from 'node-fetch'
 import crypto from 'crypto'
 
-const { BACKEND_API, EOS_API, EOS_CHAINID } = process.env
+const { EOS_API, EOS_CHAINID } = process.env
 const signatureProvider = new JsSignatureProvider([])
 const rpc = new JsonRpc(EOS_API, { fetch })
 const api = new Api({ rpc, signatureProvider })
@@ -29,7 +29,8 @@ export async function pushTransaction (txData) {
 
     const signedDataHash = crypto.createHash('sha256').update(signBuf).digest('hex')
 
-    const txStatus = (await axios.post(`${BACKEND_API}/transaction`, {
+    const backend = 'http://localhost:4001'
+    const txStatus = (await axios.post(`${backend}/transaction`, {
       transaction,
       signature: signatures[0],
       signedDataHash

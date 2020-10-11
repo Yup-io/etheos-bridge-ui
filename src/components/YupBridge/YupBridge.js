@@ -14,14 +14,22 @@ import { useWeb3React } from '@web3-react/core'
 import Web3 from 'web3'
 import TransferABI from './abi/TransferABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import { transfer } from '../../eos/actions'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
 const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, MINIMUM_BRIDGE } = process.env
+const ERROR_MSG = 'There was an error with your transaction. Please try again'
+const DISCLAIMER = 'This is an experimental technology. Use with caution!'
+const MIN_BRIDGE_MSG = 'In order to ensure stability of the bridge, there needs to be a minimum set for bridging'
+const INVALID_MSG = 'Please enter a valid staking amount.'
 
 const styles = theme => ({
+  snackbar: {
+    fontFamily: 'Rubik'
+  },
   container: {
     width: '100%',
     padding: '0px',
@@ -122,7 +130,6 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       fontSize: '0.9rem'
     }
-
   },
   sendBtn: {
     backgroundColor: '#04C399',
@@ -145,6 +152,12 @@ const styles = theme => ({
     }
   }
 })
+
+const VoteLoader = props => (
+  <CircularProgress size={35}
+    style={{ color: '#fff' }}
+  />
+)
 
 const theme = createMuiTheme({
   palette: {
@@ -172,9 +185,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }, [account, scatter])
   const [sendBal, setSendBal] = useState(0.0)
   const [memo, setMemo] = useState('')
-  const [error, setError] = useState({ severity: 'error', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
+  const [error, setError] = useState({ severity: 'warning', msg: DISCLAIMER, snackbar: true })
   const [bridgeFee, setBridgeFee] = useState(0.0)
   const [totalFee, setTotalFee] = useState(0.0)
+  const [loading, setLoading] = useState(false)
 
   const handleBalanceChange = (e) => {
     const bal = parseFloat(e.target.value) || 0.0
@@ -205,18 +219,24 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
         const value = web3.utils.toBN(transferAmount)
         const memoByte = web3.utils.asciiToHex(memo)
+        setLoading(true)
         contract.methods.sendToken(value, memoByte).send({ from: account })
           .on('error', () => {
+            setLoading(false)
             setError({
                 severity: 'error',
-                msg: 'There was an error with your transaction. Please try again.',
+                msg: ERROR_MSG,
                 snackbar: true })
             }
           )
-          .then(() => setError({
+          .then(() => {
+            setLoading(false)
+            setError({
               severity: 'success',
-              msg: `You have successfully transfered ${sendBal} ${token}.`,
-              snackbar: true }))
+              msg: `You have successfully transfered ${sendBal} ${token}`,
+              snackbar: true })
+            }
+          )
       } else if (scatterAccount) {
           // send with Scatter
           const txData = {
@@ -224,12 +244,25 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             asset: token,
             recipient: memo
           }
-          await transfer(scatterAccount, txData)
+          setLoading(true)
+          const txStatus = await transfer(scatterAccount, txData)
+          setLoading(false)
+          if (!txStatus) {
+            setError({
+                severity: 'error',
+                msg: ERROR_MSG,
+                snackbar: true })
+          } else {
+            setError({
+              severity: 'success',
+              msg: `You have successfully transfered ${sendBal} ${token}`,
+              snackbar: true })
+          }
         }
       } catch (e) {
       setError({
           severity: 'error',
-          msg: 'There was an error with your transaction. Please try again.',
+          msg: ERROR_MSG,
           snackbar: true })
     }
   }
@@ -242,6 +275,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   return (
     <>
       <Snackbar open={error.snackbar}
+        className={classes.snackbar}
         autoHideDuration={4000}
         onClose={handleSnackbarClose}
         message={error.msg}
@@ -454,7 +488,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                 xs={6}
               >
                 <Tooltip placement='bottom-start'
-                  title='In order to ensure stability of the bridge, there needs to be a minimum set for bridging'
+                  title={MIN_BRIDGE_MSG}
                 >
                   <Typography className={classes.feeText}>Minimum to bridge
                   </Typography>
@@ -475,7 +509,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             if (isNaN(sendBal)) {
               setError({
                   severity: 'warning',
-                  msg: 'Please enter a valid staking amount.',
+                  msg: INVALID_MSG,
                   snackbar: true })
             } else {
               sendToken()
@@ -483,7 +517,11 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           }}
             className={classes.sendBtn}
           >
-            Send
+            {
+              loading
+                ? <VoteLoader />
+              : <Typography>Send</Typography>
+            }
           </Button>
         </div>
       </div>
