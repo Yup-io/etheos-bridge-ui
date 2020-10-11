@@ -19,9 +19,7 @@ import { transfer } from '../../eos/actions'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
-const { ETH_TOKEN_CONTRACT, BRIDGE_FEE } = process.env
-// fetch from api
-const MINIMUM_BRIDGE = 10
+const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, MINIMUM_BRIDGE } = process.env
 
 const styles = theme => ({
   container: {
@@ -472,7 +470,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             </Grid>
           </MuiThemeProvider>
 
-          <Button onClick={() => {
+          <Button style={{ pointerEvents: (sendBal < MINIMUM_BRIDGE) ? 'none' : '' }}
+            onClick={() => {
             if (isNaN(sendBal)) {
               setError({
                   severity: 'warning',
