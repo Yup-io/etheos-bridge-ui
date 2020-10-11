@@ -29,7 +29,7 @@
             },
             {
                 "name": "_to",
-                "type": "address"
+                "type": "string"
             }
         ],
         "name": "sendToken",

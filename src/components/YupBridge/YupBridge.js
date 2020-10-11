@@ -21,6 +21,8 @@ import { transfer } from '../../eos/actions'
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
 const { ETH_TOKEN_CONTRACT, BRIDGE_FEE } = process.env
+// fetch from api
+const MINIMUM_BRIDGE = 10
 
 const styles = theme => ({
   container: {
@@ -207,22 +209,18 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
         const value = web3.utils.toBN(transferAmount)
         const memoByte = web3.utils.asciiToHex(memo)
-        try {
-          contract.methods.sendToken(value, memoByte).send({ from: account })
-        } catch (error) {
-          console.log(error)
-        }
-          // .on('error', () => {
-          //   setError({
-          //       severity: 'error',
-          //       msg: 'There was an error with your transaction. Please try again.',
-          //       snackbar: true })
-          //   }
-          // )
-          // .then(() => setError({
-          //     severity: 'success',
-          //     msg: `You have successfully transfered ${sendBal} ${token}.`,
-          //     snackbar: true }))
+        contract.methods.sendToken(value, memoByte).send({ from: account })
+          .on('error', () => {
+            setError({
+                severity: 'error',
+                msg: 'There was an error with your transaction. Please try again.',
+                snackbar: true })
+            }
+          )
+          .then(() => setError({
+              severity: 'success',
+              msg: `You have successfully transfered ${sendBal} ${token}.`,
+              snackbar: true }))
       } else if (scatterAccount) {
           // send with Scatter
           const txData = {
@@ -471,12 +469,13 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               >
                 <Typography className={classes.feeText}
                   style={{ textAlign: 'right' }}
-                >10 {token}</Typography>
+                >{MINIMUM_BRIDGE} {token}</Typography>
               </Grid>
             </Grid>
           </MuiThemeProvider>
 
-          <Button onClick={() => {
+          <Button style={{ pointerEvents: (sendBal >= MINIMUM_BRIDGE) ? 'all' : 'none' }}
+            onClick={() => {
             if (isNaN(sendBal)) {
               setError({
                   severity: 'warning',
