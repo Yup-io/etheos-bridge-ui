@@ -182,7 +182,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     setChain(account ? 'EOS' : 'ETH')
     const bridge = account ? 0.0 : BRIDGE_FEE
     setBridgeFee(bridge)
-  }, [account, scatter])
+    const total = account ? sendBal : sendBal + parseFloat(bridgeFee)
+    setTotalFee(total.toFixed(4))
+  }, [account, scatterAccount])
   const [sendBal, setSendBal] = useState(0.0)
   const [memo, setMemo] = useState('')
   const [error, setError] = useState({ severity: 'warning', msg: DISCLAIMER, snackbar: true })
@@ -193,10 +195,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const handleBalanceChange = (e) => {
     const bal = parseFloat(e.target.value) || 0.0
     setSendBal(bal)
-    const bridge = account ? 0.0 : BRIDGE_FEE
-    setBridgeFee(bridge)
-    const total = chain === account ? bal : bal + parseFloat(bridgeFee)
-    setTotalFee(total)
+    const total = account ? bal : bal + parseFloat(bridgeFee)
+    setTotalFee(total.toFixed(4))
   }
 
   const handleAcctChange = (e) => {
@@ -260,7 +260,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           }
         }
       } catch (e) {
-      setError({
+        setLoading(false)
+        setError({
           severity: 'error',
           msg: ERROR_MSG,
           snackbar: true })
