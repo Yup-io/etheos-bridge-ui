@@ -9,7 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 // const CONTRACTS_LINK = '#'
 const DISCORD_LINK = 'https://discord.gg/KED2nHS'
 const YUP_LINK = 'http://yup.io/'
-const UNISWAP_LINK = 'https://info.uniswap.org/pair/0x69bBC3F8787d573F1BBDd0a5f40C7bA0Aee9BCC9'
+const UNISWAP_LINK = 'https://app.uniswap.org/#/swap?inputCurrency=0x69bBC3F8787d573F1BBDd0a5f40C7bA0Aee9BCC9'
 
 const styles = theme => ({
   footer: {
@@ -28,6 +28,15 @@ const styles = theme => ({
     }
   },
   disclaimerText: {
+    fontFamily: 'Rubik',
+    color: '#C4C4C4',
+    fontWeight: '300',
+    border: '1px solid #BE1E2D',
+    borderRadius: '5px',
+    padding: '5px'
+  },
+  aboutText: {
+    fontFamily: 'Rubik',
     color: '#C4C4C4',
     fontWeight: '300'
   }
@@ -68,10 +77,10 @@ class Footer extends Component {
             <DialogContentText className={classes.disclaimerText}>
               ⚠️ This is highly experimental technology. Please use with caution and at your own risk.
             </DialogContentText>
-            <DialogContentText className={classes.disclaimerText}>
+            <DialogContentText className={classes.aboutText}>
               <strong style={{ color: 'white' }}>Contracts:</strong>
             </DialogContentText>
-            <DialogContentText className={classes.disclaimerText}>
+            <DialogContentText className={classes.aboutText}>
               <ul>
                 <li>
                   <a className={classes.link}
