@@ -1,10 +1,11 @@
 import { pushTransaction } from './push-transaction'
-const { YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER, YUP_ETH_CONTRACT, LP_ETH_CONTRACT, YUP_BRIDGE, LP_BRIDGE, BRIDGE_FEE, YUPETH_BRIDGE_FEE, DSP_POOL } = process.env
+const { YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER, YUP_ETH_CONTRACT, LP_ETH_CONTRACT, YUP_BRIDGE, LP_BRIDGE } = process.env
+// BRIDGE_FEE, YUPETH_BRIDGE_FEE, DSP_POOL
 
 export async function transfer (account, data) {
   const normalizedAmount = `${Number(data.amount).toFixed(4)} ${data.asset}`
-  const normalizedYUPFee = `${Number(BRIDGE_FEE).toFixed(4)} YUP`
-  const normalizedYUPETHFee = `${Number(YUPETH_BRIDGE_FEE).toFixed(4)} YUPETH`
+  // const normalizedYUPFee = `${Number(BRIDGE_FEE).toFixed(4)} YUP`
+  // const normalizedYUPETHFee = `${Number(YUPETH_BRIDGE_FEE).toFixed(4)} YUPETH`
   const tx = {
     actions: [
       {
@@ -45,14 +46,14 @@ export async function transfer (account, data) {
         {
           actor: YUP_ACCOUNT_MANAGER,
           permission: 'active'
-        }],
-        data: {
-          ram_payer: YUP_ACCOUNT_MANAGER,
-          from: account.name,
-          to: DSP_POOL,
-          quantity: data.asset === 'YUP' ? normalizedYUPFee : normalizedYUPETHFee,
-          memo: 'Bridge Fee'
-        }
+        }]
+        // data: {
+        //   ram_payer: YUP_ACCOUNT_MANAGER,
+        //   from: account.name,
+        //   to: DSP_POOL,
+        //   quantity: data.asset === 'YUP' ? normalizedYUPFee : normalizedYUPETHFee,
+        //   memo: 'Bridge Fee'
+        // }
       }
     ]
   }

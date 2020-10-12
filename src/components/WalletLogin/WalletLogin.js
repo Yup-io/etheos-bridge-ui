@@ -8,7 +8,7 @@ import { useEagerConnect, useInactiveListener } from '../../utils/hooks'
 import { injected } from '../../utils/connectors.js'
 
 import { connect } from 'react-redux'
-import { loginScatter, logoutScatter, signalConnection } from '../../redux/actions/scatter.actions'
+import { loginScatter, signalConnection } from '../../redux/actions/scatter.actions'
 import scatterWallet from '../../eos/scatter/scatter.wallet'
 
 const styles = theme => ({
@@ -114,8 +114,10 @@ const styles = theme => ({
 
 const WalletLogin = (props) => {
   const { classes } = props
-  const { connector, account, activate, deactivate, active } = useWeb3React()
-  const { scatter, scatterAccount, updateScatter, scatterInstall, disconnectScatter } = props
+  const { connector, account, activate } = useWeb3React()
+  const { scatter, scatterAccount, updateScatter, scatterInstall } = props
+  const [scatterActive, setScatter] = useState()
+  const [metaActive, setMeta] = useState()
 
   // handle logic to recognize the connector currently being activated
   const [activatingConnector, setActivatingConnector] = useState()
@@ -151,15 +153,14 @@ const WalletLogin = (props) => {
             console.error('Both Scatter Desktop and Extension are installed. Close or uninstall one to continue')
           }
         }
-      } else {
-        disconnectScatter()
       }
+      setScatter(true)
     })()
   }
 
   return (
     <div>
-      {account && active && !scatter && (
+      {metaActive && !scatterActive && (
         <Tooltip
           placement='bottom'
           title={<h2 color='#fff'
@@ -170,7 +171,7 @@ const WalletLogin = (props) => {
             <Button color='inherit'
               className={classes.connect}
               onClick={() => {
-                deactivate()
+                setMeta(false)
                 handleDialogOpen()
               }}
             >
@@ -195,7 +196,7 @@ const WalletLogin = (props) => {
           </Box>
         </Tooltip>
       )}
-      {scatter && scatter.identity && scatterAccount && (
+      {scatterActive && scatter.identity && scatterAccount && (
         <Tooltip
           placement='bottom'
           title={<h2 color='#fff'
@@ -206,7 +207,7 @@ const WalletLogin = (props) => {
             <Button color='inherit'
               className={classes.connect}
               onClick={() => {
-                checkScatter()
+                setScatter(false)
                 handleDialogOpen()
               }}
             >
@@ -231,7 +232,7 @@ const WalletLogin = (props) => {
           </Box>
         </Tooltip>
       )}
-      {!account && !active && !scatter && (
+      {!metaActive && !scatterActive && (
         <div>
           <Button className={classes.connect}
             onClick={handleDialogOpen}
@@ -303,6 +304,7 @@ const WalletLogin = (props) => {
                   <Button className={classes.blockButton}
                     variant='outlined'
                     onClick={() => {
+                      setMeta(true)
                       setActivatingConnector(injected)
                       activate(injected)
                       handleDialogClose()
@@ -339,8 +341,7 @@ WalletLogin.propTypes = {
   scatter: PropTypes.object,
   scatterInstall: PropTypes.func,
   updateScatter: PropTypes.func,
-  scatterAccount: PropTypes.object,
-  disconnectScatter: PropTypes.func
+  scatterAccount: PropTypes.object
 }
 
 const mapStateToProps = ({ scatterRequest }) => {
@@ -350,8 +351,7 @@ const mapStateToProps = ({ scatterRequest }) => {
 const mapDispatchToProps = dispatch => {
   return {
     scatterInstall: (bool) => dispatch(signalConnection(bool)),
-    updateScatter: (scatter, scatterAccount) => dispatch(loginScatter(scatter, scatterAccount)),
-    disconnectScatter: () => dispatch(logoutScatter())
+    updateScatter: (scatter, scatterAccount) => dispatch(loginScatter(scatter, scatterAccount))
   }
 }
 
