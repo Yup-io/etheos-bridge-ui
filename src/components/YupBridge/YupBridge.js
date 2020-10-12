@@ -23,8 +23,8 @@ const web3 = new Web3(new Web3(Web3.givenProvider))
 const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, MINIMUM_BRIDGE } = process.env
 const ERROR_MSG = 'There was an error with your transaction. Please try again'
 const DISCLAIMER = 'This is an experimental technology. Use with caution!'
-const MIN_BRIDGE_MSG = 'In order to ensure stability of the bridge, there needs to be a minimum set for bridging'
-const INVALID_MSG = 'Please enter a valid staking amount.'
+const MIN_BRIDGE_MSG = 'A minimum is set to ensure bridge stability'
+const INVALID_MSG = 'Please enter a valid staking amount'
 
 const styles = theme => ({
   snackbar: {
@@ -213,20 +213,30 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const sendToken = async () => {
     try {
+      console.log(chain)
       // send with MetaMask
-      if (account) {
+      if (chain === 'EOS') {
+        if (!account) {
+          setError({
+            severity: 'warning',
+            msg: 'Please connect your MetaMask wallet',
+            snackbar: true })
+          return
+        }
         const transferAmount = web3.utils.toWei(totalFee.toString())
         const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
         const value = web3.utils.toBN(transferAmount)
         const memoByte = web3.utils.asciiToHex(memo)
+        console.log('AMOUNT: ', value)
+        console.log('MEMO: ', memoByte)
         setLoading(true)
         contract.methods.sendToken(value, memoByte).send({ from: account })
           .on('error', () => {
             setLoading(false)
             setError({
-                severity: 'error',
-                msg: ERROR_MSG,
-                snackbar: true })
+              severity: 'error',
+              msg: ERROR_MSG,
+              snackbar: true })
             }
           )
           .then(() => {
@@ -237,7 +247,14 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               snackbar: true })
             }
           )
-      } else if (scatterAccount) {
+      } else if (chain === 'ETH') {
+          if (!scatterAccount) {
+            setError({
+              severity: 'warning',
+              msg: 'Please connect your Scatter wallet',
+              snackbar: true })
+            return
+          }
           // send with Scatter
           const txData = {
             amount: sendBal,
@@ -404,12 +421,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                     <MenuItem
                       className={classes.menu}
                       value='ETH'
-                      style={{ pointerEvents: account ? 'none' : '' }}
                     >Ethereum</MenuItem>
                     <MenuItem
                       className={classes.menu}
                       value='EOS'
-                      style={{ pointerEvents: scatterAccount ? 'none' : '' }}
                     >EOS</MenuItem>
                   </Select>
                 </FormControl>
@@ -488,8 +503,11 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               <Grid item
                 xs={6}
               >
-                <Tooltip placement='bottom-start'
-                  title={MIN_BRIDGE_MSG}
+                <Tooltip
+                  placement='bottom-start'
+                  title={<h color='#fff'
+                    style={{ fontSize: '14px' }}
+                         >{MIN_BRIDGE_MSG}</h>}
                 >
                   <Typography className={classes.feeText}>Minimum to bridge
                   </Typography>
