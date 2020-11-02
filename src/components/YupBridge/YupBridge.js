@@ -15,10 +15,11 @@ import TransferABI from './abi/TransferABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
+import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
-const { ETH_TOKEN_CONTRACT, BRIDGE_FEE } = process.env
+const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, BACKEND_API } = process.env
 // fetch from api
 const MINIMUM_BRIDGE = 10
 
@@ -163,19 +164,21 @@ const theme = createMuiTheme({
 
 const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const { account } = useWeb3React()
-
   const [token, setToken] = useState('YUP')
   const [chain, setChain] = useState('')
-  useEffect(() => {
-    setChain(account ? 'EOS' : 'ETH')
-    const bridge = account ? 0.0000 : BRIDGE_FEE
-    setBridgeFee(bridge)
-  }, [account, scatter])
   const [sendBal, setSendBal] = useState(0.0000)
+  const [accountBal, setAccountBal] = useState(0.000)
   const [memo, setMemo] = useState('')
   const [error, setError] = useState({ severity: 'error', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
   const [bridgeFee, setBridgeFee] = useState(0.0000)
   const [totalFee, setTotalFee] = useState(0.0000)
+
+  useEffect(() => {
+    setChain(account ? 'EOS' : 'ETH')
+    const bridge = account ? 0.0000 : BRIDGE_FEE
+    setBridgeFee(bridge)
+    fetchAndSetBalance()
+  }, [account, scatter])
 
   const handleBalanceChange = (e) => {
     const bal = parseFloat(e.target.value)
@@ -185,6 +188,22 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const total = chain === account ? bal : bal + parseFloat(bridgeFee)
     const parseFee = parseFloat(numeral(total).format('0,0.0000'))
     setTotalFee(parseFee)
+  }
+
+  const fetchAndSetBalance = async () => {
+    try {
+      const { data } = await axios.get(`${BACKEND_API}/levels/user/${scatterAccount.name}`)
+      if (scatterAccount) {
+        setAccountBal(data.balance.YUP)
+      } else if (account) {
+        setAccountBal(data.balance.YUPETH)
+      } else {
+        setAccountBal(0.00)
+    }
+   } catch (err) {
+      console.error('ERROR FETCHING BALANCE', err)
+      setAccountBal(0.00)
+    }
   }
 
   const handleAcctChange = (e) => {
@@ -297,7 +316,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                   }}
                   style={{ }}
                 />
-                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance:</FormHelperText>
+                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance: { numeral(accountBal).format('0,0.00') } </FormHelperText>
               </Grid>
               <Grid item
                 xs={5}

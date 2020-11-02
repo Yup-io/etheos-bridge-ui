@@ -56,8 +56,6 @@ export async function transfer (account, data) {
       }
     ]
   }
-  console.log('tx :>> ', tx)
-
   const txStatus = await pushTransaction(tx)
   return txStatus
 }
