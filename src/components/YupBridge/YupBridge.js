@@ -231,6 +231,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           await transfer(scatterAccount, txData)
         }
       } catch (e) {
+        console.log('error: ', e)
       setError({
           severity: 'error',
           msg: 'There was an error with your transaction. Please try again.',
