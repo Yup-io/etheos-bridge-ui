@@ -210,17 +210,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const value = web3.utils.toBN(transferAmount)
         const memoByte = web3.utils.asciiToHex(memo)
         contract.methods.sendToken(value, memoByte).send({ from: account })
-          .on('error', () => {
-            setError({
-                severity: 'error',
-                msg: 'There was an error with your transaction. Please try again.',
-                snackbar: true })
-            }
-          )
-          .then(() => setError({
-              severity: 'success',
-              msg: `You have successfully transfered ${sendBal} ${token}.`,
-              snackbar: true }))
+          .on('error', snackbarErrorMessage())
+          .then(snackbarSuccessMessage())
       } else if (scatterAccount) {
           // send with Scatter
           const txData = {
@@ -229,14 +220,25 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             recipient: memo
           }
           await transfer(scatterAccount, txData)
+          snackbarSuccessMessage()
         }
       } catch (e) {
-        console.log('error: ', e)
-      setError({
-          severity: 'error',
-          msg: 'There was an error with your transaction. Please try again.',
-          snackbar: true })
+        snackbarErrorMessage()
     }
+  }
+
+  const snackbarSuccessMessage = () => {
+    setError({
+      severity: 'success',
+      msg: `You have successfully transfered ${sendBal} ${token}.`,
+      snackbar: true })
+  }
+
+  const snackbarErrorMessage = () => {
+    setError({
+      severity: 'error',
+      msg: 'There was an error with your transaction. Please try again.',
+      snackbar: true })
   }
 
   const handleSnackbarClose = (event, reason) => {

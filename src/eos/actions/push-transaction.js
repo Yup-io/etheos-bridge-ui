@@ -29,7 +29,7 @@ export async function pushTransaction (txData) {
 
     const signedDataHash = crypto.createHash('sha256').update(signBuf).digest('hex')
 
-    const backendApi = 'http://localhost:4001'
+    const backendApi = process.env.BACKEND_API
     const txStatus = (await axios.post(`${backendApi}/transaction`, {
       transaction,
       signature: signatures[0],
