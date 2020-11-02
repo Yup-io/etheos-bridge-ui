@@ -8,14 +8,12 @@ import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
 import PropTypes from 'prop-types'
 import Footer from '../Footer/Footer'
-
 import { connect } from 'react-redux'
 import { useWeb3React } from '@web3-react/core'
 import Web3 from 'web3'
 import TransferABI from './abi/TransferABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
-
 import { transfer } from '../../eos/actions'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
