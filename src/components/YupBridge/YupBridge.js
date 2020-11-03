@@ -220,6 +220,13 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const sendToken = async () => {
     try {
+      if (sendBal > accountBal) {
+        setError({
+          severity: 'error',
+          msg: `Please enter a valid amount.`,
+          snackbar: true })
+          return
+      }
       // send with MetaMask
       if (account) {
         const transferAmount = web3.utils.toWei(totalFee.toString())
