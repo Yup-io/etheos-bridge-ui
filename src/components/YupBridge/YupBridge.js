@@ -12,9 +12,11 @@ import { connect } from 'react-redux'
 import { useWeb3React } from '@web3-react/core'
 import Web3 from 'web3'
 import TransferABI from './abi/TransferABI.abi.json'
+import ERC20ABI from './abi/ERC20ABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
+/* eslint-disable no-unused-vars */
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
@@ -169,7 +171,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [sendBal, setSendBal] = useState(0.0000)
   const [accountBal, setAccountBal] = useState(0.000)
   const [memo, setMemo] = useState('')
-  const [error, setError] = useState({ severity: 'error', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
+  const [error, setError] = useState({ severity: 'warning', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
   const [bridgeFee, setBridgeFee] = useState(0.0000)
   const [totalFee, setTotalFee] = useState(0.0000)
 
@@ -192,11 +194,13 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const fetchAndSetBalance = async () => {
     try {
-      const { data } = await axios.get(`${BACKEND_API}/levels/user/${scatterAccount.name}`)
       if (scatterAccount) {
+        const { data } = await axios.get(`${BACKEND_API}/levels/user/${scatterAccount.name}`)
         setAccountBal(data.balance.YUP)
       } else if (account) {
-        setAccountBal(data.balance.YUPETH)
+        const yupETHTokenInstance = new web3.eth.Contract(ERC20ABI, ETH_TOKEN_CONTRACT)
+        const ERC20YUPbalance = await yupETHTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
+        setAccountBal(ERC20YUPbalance)
       } else {
         setAccountBal(0.00)
     }
@@ -219,6 +223,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }
 
   const sendToken = async () => {
+    let txRes
     try {
       if (sendBal > accountBal) {
         setError({
@@ -227,25 +232,25 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           snackbar: true })
           return
       }
-      // send with MetaMask
+      // IF CONNECTED WITH METAMASK
       if (account) {
         const transferAmount = web3.utils.toWei(totalFee.toString())
         const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
         const value = web3.utils.toBN(transferAmount)
         const memoByte = web3.utils.asciiToHex(memo)
-        contract.methods.sendToken(value, memoByte).send({ from: account })
+        txRes = await contract.methods.sendToken(value, memoByte).send({ from: account })
           .on('error', snackbarErrorMessage())
-          .then(snackbarSuccessMessage())
+
+      // IF CONNECTED WITH SCATTER
       } else if (scatterAccount) {
-          // send with Scatter
           const txData = {
             amount: sendBal,
             asset: token,
             recipient: memo
           }
-          await transfer(scatterAccount, txData)
-          snackbarSuccessMessage()
+          txRes = await transfer(scatterAccount, txData)
         }
+        txRes == null ? snackbarErrorMessage() : snackbarSuccessMessage()
       } catch (e) {
         snackbarErrorMessage()
     }
