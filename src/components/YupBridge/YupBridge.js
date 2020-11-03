@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
 /* eslint-disable no-unused-vars */
 import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip, DialogActions, DialogContent } from '@material-ui/core'
+import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip } from '@material-ui/core'
 import { nameToUint64 } from 'eosjs-account-name'
-import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Select from '@material-ui/core/Select'
@@ -14,7 +13,6 @@ import Footer from '../Footer/Footer'
 import { connect } from 'react-redux'
 import { useWeb3React } from '@web3-react/core'
 import Web3 from 'web3'
-import TransferABI from './abi/TransferABI.abi.json'
 import ERC20ABI from './abi/ERC20ABI.abi.json'
 import BridgeABI from './abi/BridgeABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
@@ -240,14 +238,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const transferAmount = web3.utils.toWei(sendBal.toString())
         const yupETHTokenInstance = new web3.eth.Contract(ERC20ABI, ETH_TOKEN_CONTRACT)
         const bridgeContractInstance = new web3.eth.Contract(BridgeABI, BRIDGE_CONTRACT)
+        await yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account })
         const value = web3.utils.toBN(transferAmount)
         const memoUINT64 = nameToUint64(memo)
-        console.log('web3.createBatch :>> ', web3.createBatch)
-
-        const txBatch = web3.createBatch()
-        txBatch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account }))
-        txBatch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account }))
-        const txRes = await txBatch.execute()
+        txRes = await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
         console.log('txRes >> ', txRes)
       // IF CONNECTED WITH SCATTER
       } else if (scatterAccount) {
