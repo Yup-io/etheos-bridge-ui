@@ -18,6 +18,10 @@ import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
 /* eslint-disable no-unused-vars */
 import axios from 'axios'
+import Dialog from '@material-ui/core/Dialog'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
@@ -147,6 +151,10 @@ const styles = theme => ({
       margin: '10% auto auto auto',
       bottom: '10px'
     }
+  },
+  disclaimerText: {
+    color: '#C4C4C4',
+    fontWeight: '300'
   }
 })
 
@@ -174,6 +182,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [error, setError] = useState({ severity: 'warning', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
   const [bridgeFee, setBridgeFee] = useState(0.0000)
   const [totalFee, setTotalFee] = useState(0.0000)
+  const [open, setOpen] = React.useState(false)
 
   useEffect(() => {
     setChain(account ? 'EOS' : 'ETH')
@@ -259,7 +268,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const snackbarSuccessMessage = () => {
     setError({
       severity: 'success',
-      msg: `You have successfully transfered ${sendBal} ${token}.`,
+      msg: `You have successfully transferred ${sendBal} ${token}.`,
       snackbar: true })
   }
 
@@ -273,6 +282,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') return
     setError({ snackbar: false })
+  }
+
+  const handleClose = () => {
+    setOpen(false)
   }
 
   return (
@@ -290,6 +303,31 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           {error.msg}
         </Alert>
       </Snackbar>
+      <Dialog open='true'
+        onClose={handleClose}
+        aria-labelledby='form-dialog-title'
+        PaperProps={{
+          style: {
+            backgroundColor: '#1A1A1A',
+            color: '#F7F7F7',
+            width: '400px',
+            fontFamily: 'Rubik, sans serif'
+          }
+        }}
+      >
+        <DialogTitle id='form-dialog-title'>Success</DialogTitle>
+        <DialogContent>
+          <DialogContentText className={classes.disclaimerText}>
+            You have successfully transferred {sendBal} {token}!
+          </DialogContentText>
+          <DialogContentText className={classes.disclaimerText}>
+            <strong style={{ color: 'white' }}><a style={{ color: 'white' }}
+              target='_blank'
+              href='https://etherscan.io/address/0xc06E095671EF4E48dB25BA20F6D3c8663F039bF8'
+                                               >See Address on Etherscan ↗️</a></strong>
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
       <div className={classes.container}>
         <div className={classes.bridgeContainer}>
           <MuiThemeProvider theme={theme}>
