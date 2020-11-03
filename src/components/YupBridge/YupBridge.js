@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
+/* eslint-disable no-unused-vars */
 import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip } from '@material-ui/core'
+import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip, DialogActions, DialogContent } from '@material-ui/core'
+import { nameToUint64 } from 'eosjs-account-name'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Select from '@material-ui/core/Select'
@@ -13,15 +16,15 @@ import { useWeb3React } from '@web3-react/core'
 import Web3 from 'web3'
 import TransferABI from './abi/TransferABI.abi.json'
 import ERC20ABI from './abi/ERC20ABI.abi.json'
+import BridgeABI from './abi/BridgeABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
-/* eslint-disable no-unused-vars */
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
-const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, BACKEND_API } = process.env
+const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, BACKEND_API, BRIDGE_CONTRACT } = process.env
 // fetch from api
 const MINIMUM_BRIDGE = 10
 
@@ -234,13 +237,18 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       }
       // IF CONNECTED WITH METAMASK
       if (account) {
-        const transferAmount = web3.utils.toWei(totalFee.toString())
-        const contract = new web3.eth.Contract(TransferABI, ETH_TOKEN_CONTRACT)
+        const transferAmount = web3.utils.toWei(sendBal.toString())
+        const yupETHTokenInstance = new web3.eth.Contract(ERC20ABI, ETH_TOKEN_CONTRACT)
+        const bridgeContractInstance = new web3.eth.Contract(BridgeABI, BRIDGE_CONTRACT)
         const value = web3.utils.toBN(transferAmount)
-        const memoByte = web3.utils.asciiToHex(memo)
-        txRes = await contract.methods.sendToken(value, memoByte).send({ from: account })
-          .on('error', snackbarErrorMessage())
+        const memoUINT64 = nameToUint64(memo)
+        console.log('web3.createBatch :>> ', web3.createBatch)
 
+        const txBatch = web3.createBatch()
+        txBatch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account }))
+        txBatch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account }))
+        const txRes = await txBatch.execute()
+        console.log('txRes >> ', txRes)
       // IF CONNECTED WITH SCATTER
       } else if (scatterAccount) {
           const txData = {
@@ -250,6 +258,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           }
           txRes = await transfer(scatterAccount, txData)
         }
+
         txRes == null ? snackbarErrorMessage() : snackbarSuccessMessage()
       } catch (e) {
         snackbarErrorMessage()
@@ -259,8 +268,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const snackbarSuccessMessage = () => {
     setError({
       severity: 'success',
-      msg: `You have successfully transfered ${sendBal} ${token}.`,
+      msg: `You have successfully bridged ${sendBal} ${token}. Your tokens will arrive shortly`,
       snackbar: true })
+      document.getElementById('send-bal-field').value = ''
+      document.getElementById('address-field').value = ''
   }
 
   const snackbarErrorMessage = () => {
@@ -319,6 +330,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               >
                 <TextField
                   autoFocus
+                  id='send-bal-field'
                   margin='none'
                   onChange={handleBalanceChange}
                   type='text'
@@ -426,6 +438,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               >
                 <TextField
                   autoFocus
+                  id='address-field'
                   margin='none'
                   variant='outlined'
                   onChange={handleAcctChange}
