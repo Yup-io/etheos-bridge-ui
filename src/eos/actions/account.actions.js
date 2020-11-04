@@ -1,5 +1,5 @@
 import { pushTransaction } from './push-transaction'
-const { YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER, YUP_ETH_CONTRACT, LP_ETH_CONTRACT, YUP_BRIDGE, LP_BRIDGE, BRIDGE_FEE, YUPETH_BRIDGE_FEE } = process.env
+const { YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER, YUP_TOKEN_CONTRACT, LP_EOS_TOKEN_CONTRACT, YUP_BRIDGE, LP_BRIDGE, BRIDGE_FEE, YUPETH_BRIDGE_FEE } = process.env
 
 export async function transfer (account, data) {
   const normalizedAmount = `${Number(data.amount).toFixed(4)} ${data.asset}`
@@ -17,7 +17,7 @@ export async function transfer (account, data) {
         data: {}
       },
       {
-        account: data.asset === 'YUP' ? YUP_ETH_CONTRACT : LP_ETH_CONTRACT,
+        account: data.asset === 'YUP' ? YUP_TOKEN_CONTRACT : LP_EOS_TOKEN_CONTRACT,
         name: 'transfer',
         authorization: [{
           actor: account.name,
@@ -36,7 +36,7 @@ export async function transfer (account, data) {
         }
       },
       {
-        account: data.asset === 'YUP' ? YUP_ETH_CONTRACT : LP_ETH_CONTRACT,
+        account: data.asset === 'YUP' ? YUP_TOKEN_CONTRACT : LP_EOS_TOKEN_CONTRACT,
         name: 'transfer',
         authorization: [{
           actor: account.name,
