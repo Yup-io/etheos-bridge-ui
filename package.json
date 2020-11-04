@@ -38,6 +38,7 @@
     "downshift": "^3.2.2",
     "eos-common": "^0.8.0",
     "eosjs": "npm:eosjs@16.0.9",
+    "eosjs-account-name": "^2.1.1",
     "eosjs2": "npm:eosjs@20.0.0",
     "fast-deep-equal": "^3.1.1",
     "file-loader": "2.0.0",

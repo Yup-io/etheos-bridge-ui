@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip, DialogContent, DialogContentText, DialogTitle, Dialog } from '@material-ui/core'
-import nameToUint64 from '../../utils/nameToUint64'
+// import nameToUint64 from '../../utils/nameToUint64'
+import { nameToUint64 } from '../../utils/string-hex-converter'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Select from '@material-ui/core/Select'
@@ -24,6 +25,7 @@ const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, BACKEND_API, BRIDGE_CONTRACT, YUPETH_BRI
 const MINIMUM_BRIDGE = 0.00001
 
 console.log('nameToUint64 :>> ', nameToUint64)
+console.log(nameToUint64('testingtesti'))
 
 const styles = theme => ({
   container: {
