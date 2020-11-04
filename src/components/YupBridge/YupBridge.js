@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 /* eslint-disable no-unused-vars */
 import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip } from '@material-ui/core'
+import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip, DialogContent, DialogContentText, DialogTitle, Dialog } from '@material-ui/core'
 import { nameToUint64 } from 'eosjs-account-name'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
@@ -24,7 +24,7 @@ const web3 = new Web3(new Web3(Web3.givenProvider))
 // NEEDS TO BE UPDATED
 const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, BACKEND_API, BRIDGE_CONTRACT } = process.env
 // fetch from api
-const MINIMUM_BRIDGE = 10
+const MINIMUM_BRIDGE = 0.00001
 
 const styles = theme => ({
   container: {
@@ -148,6 +148,10 @@ const styles = theme => ({
       margin: '10% auto auto auto',
       bottom: '10px'
     }
+  },
+  disclaimerText: {
+    color: '#C4C4C4',
+    fontWeight: '300'
   }
 })
 
@@ -175,6 +179,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [error, setError] = useState({ severity: 'warning', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
   const [bridgeFee, setBridgeFee] = useState(0.0000)
   const [totalFee, setTotalFee] = useState(0.0000)
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false)
 
   useEffect(() => {
     setChain(account ? 'EOS' : 'ETH')
@@ -191,6 +196,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const total = chain === account ? bal : bal + parseFloat(bridgeFee)
     const parseFee = parseFloat(numeral(total).format('0,0.0000'))
     setTotalFee(parseFee)
+  }
+
+  const handleSuccessDialogClose = () => {
+    setSuccessDialogOpen(false)
   }
 
   const fetchAndSetBalance = async () => {
@@ -235,13 +244,22 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       }
       // IF CONNECTED WITH METAMASK
       if (account) {
+        const txBatch = new web3.eth.BatchRequest()
+        // batch.add(myContractInstance.doSomethingElseEntirely(arg1, arg2, { from: account, gas: 4000000 }))
         const transferAmount = web3.utils.toWei(sendBal.toString())
         const yupETHTokenInstance = new web3.eth.Contract(ERC20ABI, ETH_TOKEN_CONTRACT)
         const bridgeContractInstance = new web3.eth.Contract(BridgeABI, BRIDGE_CONTRACT)
-        await yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account })
+
         const value = web3.utils.toBN(transferAmount)
         const memoUINT64 = nameToUint64(memo)
-        txRes = await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
+        // txBatch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account }))
+        // txBatch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account }))
+        const batch = await txBatch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account }))
+        console.log('batch :>> ', batch)
+        txBatch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account }))
+        txRes = await txBatch.execute()
+        // await yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account })
+        // await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
         console.log('txRes >> ', txRes)
       // IF CONNECTED WITH SCATTER
       } else if (scatterAccount) {
@@ -252,18 +270,15 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           }
           txRes = await transfer(scatterAccount, txData)
         }
-
-        txRes == null ? snackbarErrorMessage() : snackbarSuccessMessage()
+        txRes == null ? snackbarErrorMessage() : successDialog()
       } catch (e) {
+        console.log('ERRROR:', e)
         snackbarErrorMessage()
     }
   }
 
-  const snackbarSuccessMessage = () => {
-    setError({
-      severity: 'success',
-      msg: `You have successfully bridged ${sendBal} ${token}. Your tokens will arrive shortly`,
-      snackbar: true })
+  const successDialog = () => {
+    setSuccessDialogOpen(true)
       document.getElementById('send-bal-field').value = ''
       document.getElementById('address-field').value = ''
   }
@@ -295,6 +310,31 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           {error.msg}
         </Alert>
       </Snackbar>
+      <Dialog open={successDialogOpen}
+        onClose={handleSuccessDialogClose}
+        aria-labelledby='form-dialog-title'
+        PaperProps={{
+          style: {
+            backgroundColor: '#1A1A1A',
+            color: '#F7F7F7',
+            width: '400px',
+            fontFamily: 'Rubik, sans serif'
+          }
+        }}
+      >
+        <DialogTitle id='form-dialog-title'>Success</DialogTitle>
+        <DialogContent>
+          <DialogContentText className={classes.disclaimerText}>
+            You have successfully transferred {sendBal} {token}!
+          </DialogContentText>
+          <DialogContentText className={classes.disclaimerText}>
+            <strong style={{ color: 'white' }}><a style={{ color: 'white' }}
+              target='_blank'
+              href={`https://etherscan.io/address/${account}`}
+                                               >See Address on Etherscan ↗️</a></strong>
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
       <div className={classes.container}>
         <div className={classes.bridgeContainer}>
           <MuiThemeProvider theme={theme}>
