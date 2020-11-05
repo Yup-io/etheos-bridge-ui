@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip, DialogContent, DialogContentText, DialogTitle, Dialog } from '@material-ui/core'
-import { nameToUint64 } from '../../utils/string-hex-converter'
+import { nameToUint64 } from 'eosjs-account-name'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Select from '@material-ui/core/Select'
@@ -235,7 +235,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         snackbar: true })
         return
     }
-    try {
+    // try {
       // IF CONNECTED WITH METAMASK
       if (account) {
         const transferAmount = web3.utils.toWei(sendBal.toString())
@@ -249,9 +249,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         // await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
         console.log('bridgeContractInstance.methods.sendToken :>> ', bridgeContractInstance.methods.sendToken)
         const batch = new web3.BatchRequest()
-        batch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).request({ from: account }))
-        batch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).request({ from: account }))
-        txRes = await batch.execute()
+        batch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account }))
+        batch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account }))
+        await batch.execute()
       // IF CONNECTED WITH SCATTER
       } else if (scatterAccount) {
           const txData = {
@@ -262,9 +262,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           txRes = await transfer(scatterAccount, txData)
         }
         txRes == null ? snackbarErrorMessage() : successDialog()
-      } catch (e) {
-        snackbarErrorMessage()
-    }
+    //   } catch (e) {
+    //     snackbarErrorMessage()
+    // }
   }
 
   const successDialog = () => {
