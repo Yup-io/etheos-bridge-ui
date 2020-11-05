@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { withStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import { Grid, MenuItem, FormHelperText, Snackbar, Tooltip, DialogContent, DialogContentText, DialogTitle, Dialog } from '@material-ui/core'
-// import nameToUint64 from '../../utils/nameToUint64'
 import { nameToUint64 } from '../../utils/string-hex-converter'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
@@ -23,9 +22,6 @@ import axios from 'axios'
 const web3 = new Web3(new Web3(Web3.givenProvider))
 const { ETH_TOKEN_CONTRACT, BRIDGE_FEE, BACKEND_API, BRIDGE_CONTRACT, YUPETH_BRIDGE_FEE, LP_ETH_TOKEN_CONTRACT } = process.env
 const MINIMUM_BRIDGE = 0.00001
-
-console.log('nameToUint64 :>> ', nameToUint64)
-console.log(nameToUint64('testingtesti'))
 
 const styles = theme => ({
   container: {
@@ -232,26 +228,29 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const sendToken = async () => {
     let txRes
+    if (sendBal > accountBal) {
+      setError({
+        severity: 'error',
+        msg: `Please enter a valid amount.`,
+        snackbar: true })
+        return
+    }
     try {
-      if (sendBal > accountBal) {
-        setError({
-          severity: 'error',
-          msg: `Please enter a valid amount.`,
-          snackbar: true })
-          return
-      }
       // IF CONNECTED WITH METAMASK
       if (account) {
         const transferAmount = web3.utils.toWei(sendBal.toString())
+        console.log('transferAmount :>> ', transferAmount)
         const yupETHTokenInstance = new web3.eth.Contract(ERC20ABI, ETH_TOKEN_CONTRACT)
         const bridgeContractInstance = new web3.eth.Contract(BridgeABI, BRIDGE_CONTRACT)
         const value = web3.utils.toBN(transferAmount)
+        console.log('value :>> ', value)
         const memoUINT64 = nameToUint64(memo)
         // await yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account })
         // await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
+        console.log('bridgeContractInstance.methods.sendToken :>> ', bridgeContractInstance.methods.sendToken)
         const batch = new web3.BatchRequest()
-        batch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account }))
-        batch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account }))
+        batch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).request({ from: account }))
+        batch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).request({ from: account }))
         txRes = await batch.execute()
       // IF CONNECTED WITH SCATTER
       } else if (scatterAccount) {
@@ -264,7 +263,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         }
         txRes == null ? snackbarErrorMessage() : successDialog()
       } catch (e) {
-        console.log('ERRROR:', e)
         snackbarErrorMessage()
     }
   }
