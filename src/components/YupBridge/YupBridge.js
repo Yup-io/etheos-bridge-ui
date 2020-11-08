@@ -170,6 +170,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const { account } = useWeb3React()
   const [token, setToken] = useState('YUP')
   const [chain, setChain] = useState('')
+  const [ethAddress, setETHAddress] = useState('')
   const [sendBal, setSendBal] = useState(0.0000)
   const [accountBal, setAccountBal] = useState(0.000)
   const [memo, setMemo] = useState('')
@@ -205,6 +206,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const { data } = await axios.get(`${BACKEND_API}/levels/user/${scatterAccount.name}`)
         setAccountBal(data.balance[token])
       } else if (account) {
+        setETHAddress(account) // store eth address for tx success modal
         const tokenInstance = new web3.eth.Contract(ERC20ABI, token === 'YUP' ? ETH_TOKEN_CONTRACT : LP_ETH_TOKEN_CONTRACT)
         const erc20TokenBalance = await tokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
         setAccountBal(erc20TokenBalance)
@@ -251,7 +253,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const batch = new web3.BatchRequest()
         batch.add(yupETHTokenInstance.methods.approve(BRIDGE_CONTRACT, transferAmount).send({ from: account }))
         batch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account }))
-        await batch.execute()
+        txRes = await batch.execute()
       // IF CONNECTED WITH SCATTER
       } else if (scatterAccount) {
           const txData = {
@@ -320,7 +322,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           <DialogContentText className={classes.disclaimerText}>
             <strong style={{ color: 'white' }}><a style={{ color: 'white' }}
               target='_blank'
-              href={`https://etherscan.io/address/`}
+              href={`https://etherscan.io/address/${ethAddress}`}
                                                >See Address on Etherscan ↗️</a></strong>
           </DialogContentText>
         </DialogContent>
