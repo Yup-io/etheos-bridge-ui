@@ -1,5 +1,5 @@
 import { pushTransaction } from './push-transaction'
-const { YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER, YUP_TOKEN_CONTRACT, LP_EOS_TOKEN_CONTRACT, YUP_BRIDGE, LP_BRIDGE, BRIDGE_FEE, YUPETH_BRIDGE_FEE } = process.env
+const { YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER, YUP_TOKEN_EOS, LP_TOKEN_EOS, YUP_BRIDGE_CONTRACT_EOS, LP_BRIDGE_CONTRACT_EOS, BRIDGE_FEE, YUPETH_BRIDGE_FEE } = process.env
 
 export async function transfer (account, data) {
   const normalizedAmount = `${Number(data.amount).toFixed(4)} ${data.asset}`
@@ -17,7 +17,7 @@ export async function transfer (account, data) {
         data: {}
       },
       {
-        account: data.asset === 'YUP' ? YUP_TOKEN_CONTRACT : LP_EOS_TOKEN_CONTRACT,
+        account: data.asset === 'YUP' ? YUP_TOKEN_EOS : LP_TOKEN_EOS,
         name: 'transfer',
         authorization: [{
           actor: account.name,
@@ -30,13 +30,13 @@ export async function transfer (account, data) {
         data: {
           ram_payer: YUP_ACCOUNT_MANAGER,
           from: account.name,
-          to: data.asset === 'YUP' ? YUP_BRIDGE : LP_BRIDGE,
+          to: data.asset === 'YUP' ? YUP_BRIDGE_CONTRACT_EOS : LP_BRIDGE_CONTRACT_EOS,
           quantity: normalizedAmount,
           memo: data.recipient
         }
       },
       {
-        account: data.asset === 'YUP' ? YUP_TOKEN_CONTRACT : LP_EOS_TOKEN_CONTRACT,
+        account: data.asset === 'YUP' ? YUP_TOKEN_EOS : LP_TOKEN_EOS,
         name: 'transfer',
         authorization: [{
           actor: account.name,
