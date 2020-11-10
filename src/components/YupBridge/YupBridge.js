@@ -20,7 +20,7 @@ import { transfer } from '../../eos/actions'
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const { YUP_TOKEN_ETH, BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, YUPETH_BRIDGE_FEE, LP_ETH_TOKEN_CONTRACT } = process.env
+const { YUP_TOKEN_ETH, BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_ETH_TOKEN_CONTRACT } = process.env
 const MINIMUM_BRIDGE = 0.00001
 
 const styles = theme => ({
@@ -185,7 +185,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }, [account, scatter, token])
 
   useEffect(() => {
-    const bridgeFee = account ? 0.0000 : (token === 'YUP' ? BRIDGE_FEE : YUPETH_BRIDGE_FEE)
+    const bridgeFee = account ? 0.0000 : (token === 'YUP' ? BRIDGE_FEE : LP_BRIDGE_FEE)
     setBridgeFee(bridgeFee)
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
     const parsedFeePlusSendBal = parseFloat(numeral(total).format('0,0.0000'))
