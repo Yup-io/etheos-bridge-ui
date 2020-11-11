@@ -20,8 +20,7 @@ import { transfer } from '../../eos/actions'
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_ETH_TOKEN_CONTRACT } = process.env
-const MINIMUM_BRIDGE = 0.00001
+const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_ETH_TOKEN_CONTRACT, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 
 const styles = theme => ({
   container: {
@@ -230,10 +229,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const sendToken = async () => {
     let txRes
-    if (sendBal > accountBal) {
+    if (sendBal + (token === 'YUP' ? YUP_BRIDGE_FEE : LP_BRIDGE_FEE) > accountBal) {
       setError({
         severity: 'error',
-        msg: `Please enter a valid amount.`,
+        msg: `Insufficient funds. Please enter a valid amount.`,
         snackbar: true })
         return
     }
@@ -313,7 +312,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           <DialogContentText className={classes.disclaimerText}>
             <strong style={{ color: 'white' }}><a style={{ color: 'white' }}
               target='_blank'
-              href={`https://etherscan.io/address/${ethAddress}`}
+              href={`https://etherscan.io/address/${ethAddress}#tokentxns`}
                                                >See Address on Etherscan ↗️</a></strong>
           </DialogContentText>
         </DialogContent>
@@ -531,12 +530,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               >
                 <Typography className={classes.feeText}
                   style={{ textAlign: 'right' }}
-                >{MINIMUM_BRIDGE} {token}</Typography>
+                >{token === 'YUP' ? YUP_BRIDGE_FEE : LP_BRIDGE_FEE} {token}</Typography>
               </Grid>
             </Grid>
           </MuiThemeProvider>
 
-          <Button style={{ pointerEvents: (sendBal >= MINIMUM_BRIDGE) ? 'all' : 'none' }}
+          <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none' }}
             onClick={() => {
             if (isNaN(sendBal)) {
               setError({
