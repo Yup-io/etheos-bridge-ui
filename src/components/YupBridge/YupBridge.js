@@ -20,7 +20,7 @@ import { transfer } from '../../eos/actions'
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_ETH_TOKEN_CONTRACT, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
+const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 
 const styles = theme => ({
   container: {
@@ -207,7 +207,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         setAccountBal(data.balance[token])
       } else if (account) {
         setETHAddress(account) // store eth address for tx success modal
-        const tokenInstance = new web3.eth.Contract(ERC20ABI, token === 'YUP' ? YUP_TOKEN_ETH : LP_ETH_TOKEN_CONTRACT)
+        const tokenInstance = new web3.eth.Contract(ERC20ABI, token === 'YUP' ? YUP_TOKEN_ETH : LP_UNWRAP_TOKEN_ETH)
         const erc20TokenBalance = await tokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
         setAccountBal(erc20TokenBalance)
     }
@@ -230,7 +230,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const sendToken = async () => {
     let txRes
-    if (sendBal + (token === 'YUP' ? YUP_BRIDGE_FEE : LP_BRIDGE_FEE) > accountBal) {
+    if (sendBal > accountBal) {
       setError({
         severity: 'error',
         msg: `Insufficient funds. Please enter a valid amount.`,
