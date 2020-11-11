@@ -28,7 +28,6 @@ export async function transfer (account, data) {
           permission: 'active'
         }],
         data: {
-          ram_payer: YUP_ACCOUNT_MANAGER,
           from: account.name,
           to: data.asset === 'YUP' ? YUP_BRIDGE_CONTRACT_EOS : LP_BRIDGE_CONTRACT_EOS,
           quantity: normalizedAmount,
@@ -47,7 +46,6 @@ export async function transfer (account, data) {
           permission: 'active'
         }],
         data: {
-          ram_payer: YUP_ACCOUNT_MANAGER,
           from: account.name,
           to: YUP_ACCOUNT_MANAGER,
           quantity: data.asset === 'YUP' ? normalizedYUPFee : normalizedYUPETHFee,
