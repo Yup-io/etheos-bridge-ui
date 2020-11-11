@@ -20,7 +20,7 @@ import { transfer } from '../../eos/actions'
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const { YUP_TOKEN_ETH, BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_ETH_TOKEN_CONTRACT } = process.env
+const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_ETH_TOKEN_CONTRACT } = process.env
 const MINIMUM_BRIDGE = 0.00001
 
 const styles = theme => ({
@@ -185,7 +185,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }, [account, scatter, token])
 
   useEffect(() => {
-    const bridgeFee = account ? 0.0000 : (token === 'YUP' ? BRIDGE_FEE : LP_BRIDGE_FEE)
+    const bridgeFee = account ? 0.0000 : (token === 'YUP' ? YUP_BRIDGE_FEE : LP_BRIDGE_FEE)
     setBridgeFee(bridgeFee)
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
     const parsedFeePlusSendBal = parseFloat(numeral(total).format('0,0.0000'))
@@ -238,24 +238,15 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         return
     }
     try {
-      // IF CONNECTED WITH METAMASK
       if (account) {
         const transferAmount = web3.utils.toWei(sendBal.toString())
-        console.log('transferAmount :>> ', transferAmount)
         const tokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
         const bridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
         const value = web3.utils.toBN(transferAmount)
-        console.log('value :>> ', value)
         const memoUINT64 = nameToUint64(memo)
         await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, transferAmount).send({ from: account })
-        await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
-        // const batch = new web3.BatchRequest()
-        // batch.add(tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, transferAmount).send({ from: account }))
-        // batch.add(bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account }))
-        // txRes = await batch.execute()
-      // IF CONNECTED WITH SCATTER
+        txRes = await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
       } else if (scatterAccount) {
-        console.log('scatterAccount :>> ', scatterAccount)
           const txData = {
             amount: sendBal,
             asset: token,
@@ -265,7 +256,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         }
         txRes == null ? snackbarErrorMessage() : successDialog()
       } catch (e) {
-        console.log('error :>> ', e)
         snackbarErrorMessage()
     }
   }
