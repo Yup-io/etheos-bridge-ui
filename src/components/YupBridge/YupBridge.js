@@ -189,6 +189,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
     const parsedFeePlusSendBal = parseFloat(numeral(total).format('0,0.0000'))
     setTotal(parsedFeePlusSendBal)
+    console.log('(sendBal >= (token === "YUP', (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none')
   }, [token, sendBal, account, scatter])
 
   const handleBalanceChange = (e) => {
@@ -530,7 +531,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               >
                 <Typography className={classes.feeText}
                   style={{ textAlign: 'right' }}
-                >{token === 'YUP' ? YUP_BRIDGE_FEE : LP_BRIDGE_FEE} {token}</Typography>
+                >{token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN} {token}</Typography>
               </Grid>
             </Grid>
           </MuiThemeProvider>
