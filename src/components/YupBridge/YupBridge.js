@@ -20,7 +20,7 @@ import { transfer } from '../../eos/actions'
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
+const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 
 const styles = theme => ({
   container: {
@@ -189,7 +189,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
     const parsedFeePlusSendBal = parseFloat(numeral(total).format('0,0.0000'))
     setTotal(parsedFeePlusSendBal)
-    console.log('(sendBal >= (token === "YUP', (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none')
   }, [token, sendBal, account, scatter])
 
   const handleBalanceChange = (e) => {
@@ -240,11 +239,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     try {
       if (account) {
         const transferAmount = web3.utils.toWei(sendBal.toString())
-        const tokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
-        const bridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
+        const tokenInstance = new web3.eth.Contract(ERC20ABI, (token === 'YUP' ? YUP_TOKEN_ETH : LP_UNWRAP_TOKEN_ETH))
+        const bridgeContractInstance = new web3.eth.Contract(BridgeABI, (token === 'YUP' ? YUP_BRIDGE_CONTRACT_ETH : LP_BRIDGE_CONTRACT_ETH))
         const value = web3.utils.toBN(transferAmount)
         const memoUINT64 = nameToUint64(memo)
-        await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, transferAmount).send({ from: account })
+        console.log(token === 'YUP' ? YUP_BRIDGE_CONTRACT_ETH : LP_BRIDGE_CONTRACT_ETH)
+        await tokenInstance.methods.approve((token === 'YUP' ? YUP_BRIDGE_CONTRACT_ETH : LP_BRIDGE_CONTRACT_ETH), transferAmount).send({ from: account })
         txRes = await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
       } else if (scatterAccount) {
           const txData = {
@@ -549,7 +549,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           }}
             className={classes.sendBtn}
           >
-            Send
+            Approve + Send
           </Button>
         </div>
       </div>
