@@ -180,11 +180,19 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [total, setTotal] = useState(0.0000)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   const [buttonText, setButtonText] = useState('Approve + Send')
+  const [unwrapButtonText, setUnwrapButtonText] = useState('Unwrap')
+  const [unwrappedYUPETHbalance, setUnwrappedYUPETHbalance] = useState(0)
+  const [unwrapDialogOpen, setUnwrapDialogOpen] = useState(false)
 
   useEffect(() => {
     setChain(account ? 'EOS' : 'ETH')
     fetchAndSetBalance()
   }, [account, scatter, token])
+
+  // check if there is wrappeth YUPETH and trigger unwrap if so
+  useEffect(() => {
+   checkForWrappedYUPETH()
+  }, [account])
 
   useEffect(() => {
     const bridgeFee = account ? 0.0000 : (token === 'YUP' ? YUP_BRIDGE_FEE : LP_BRIDGE_FEE)
@@ -194,12 +202,37 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     setTotal(parsedFeePlusSendBal)
   }, [token, sendBal, account, scatter])
 
+  const checkForWrappedYUPETH = async () => {
+    const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
+    const wrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
+    setUnwrappedYUPETHbalance(wrapYUPETHbalance)
+    const balToUnwrap = web3.utils.toWei(wrapYUPETHbalance.toString())
+    console.log('balToUnwrap :>> ', balToUnwrap)
+    if (wrapYUPETHbalance === 0) { return }
+    setUnwrapDialogOpen(true)
+  }
+
+  const unwrapTokens = async () => {
+    const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
+    const wrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
+    const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
+    const balToUnwrap = web3.utils.toWei(wrapYUPETHbalance.toString())
+    setUnwrapButtonText('Approving YUPETEH unwrap...')
+    await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, balToUnwrap).send({ from: account })
+    setUnwrapButtonText('Unwrapping YUPETEH...')
+    await wrapTokenInstance.methods.unwrap(wrapYUPETHbalance).send({ from: account })
+  }
+
   const handleBalanceChange = (e) => {
     setSendBal(parseFloat(e.target.value))
   }
 
   const handleSuccessDialogClose = () => {
     setSuccessDialogOpen(false)
+  }
+
+  const handleUnwrapDialogClose = () => {
+    setUnwrapDialogOpen(false)
   }
 
   const fetchAndSetBalance = async () => {
@@ -336,6 +369,39 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               target='_blank'
               href={`https://etherscan.io/address/${ethAddress}#tokentxns`}
                                                >See Address on Etherscan ↗️</a></strong>
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={unwrapDialogOpen}
+        onClose={handleUnwrapDialogClose}
+        aria-labelledby='form-dialog-title'
+        PaperProps={{
+          style: {
+            backgroundColor: '#1A1A1A',
+            color: '#F7F7F7',
+            width: '400px',
+            fontFamily: 'Rubik, sans serif'
+          }
+        }}
+      >
+        <DialogTitle id='form-dialog-title'>Unwrap</DialogTitle>
+        <DialogContent>
+          <DialogContentText className={classes.disclaimerText}>
+            You have {unwrappedYUPETHbalance} YUPETEH to unwrap.
+          </DialogContentText>
+          <DialogContentText className={classes.disclaimerText}>
+            <Button
+              disabled={unwrapButtonText !== 'Unwrap'}
+              onClick={() => {
+                unwrapTokens()
+              }
+            }
+              fullWidth
+              variant='outlined'
+              style={{ backgroundColor: '#04C399', borderRadius: 10 }}
+            >
+              {unwrapButtonText}
+            </Button>
           </DialogContentText>
         </DialogContent>
       </Dialog>
