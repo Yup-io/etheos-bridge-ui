@@ -130,6 +130,7 @@ const styles = theme => ({
     width: '90%',
     height: '60px',
     fontSize: '1.2rem',
+    fontFamily: 'Rubik, sans-serif',
     color: '#fff',
     display: 'flex',
     borderRadius: '15px',
@@ -253,7 +254,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // 0x67de7939c0686686c037f19dcf26f173d6bedcaf
           const wrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_WRAP_TOKEN_ETH) // 0x3567989f926c8045598f90cc78d9779530e62239
           const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, LP_BRIDGE_CONTRACT_ETH) // 0xF5FC1c2c93F9d1FA5423bc83f76A8B0637947534
-          console.log('object :>> ', lpBridgeContractInstance)
 
           await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account })
           await wrapTokenInstance.methods.wrap(allowance).send({ from: account })
