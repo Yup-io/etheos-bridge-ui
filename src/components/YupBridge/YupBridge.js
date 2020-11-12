@@ -247,22 +247,22 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         if (token === 'YUP') {
           const tokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
           const yupBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
-          setButtonText('Approving YUP')
+          setButtonText('Approving YUP...')
           await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
-          setButtonText('Sending YUP')
+          setButtonText('Sending YUP...')
           txRes = await yupBridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
           setButtonText('Approve + Send')
         } else if (token === 'YUPETH') {
           const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
           const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
           const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, LP_BRIDGE_CONTRACT_ETH) // ropsten 0xF5FC1c2c93F9d1FA5423bc83f76A8B0637947534
-          setButtonText('Approving YUPETH')
+          setButtonText('Approving YUPETH...')
           await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account })
-          setButtonText('Wrapping YUPETH')
+          setButtonText('Wrapping YUPETH...')
           await wrapTokenInstance.methods.wrap(allowance).send({ from: account })
-          setButtonText('Approving Bridge Contract')
+          setButtonText('Approving Bridge Contract...')
           await wrapTokenInstance.methods.approve(LP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
-          setButtonText('Sending YUPETH')
+          setButtonText('Sending YUPETH...')
           txRes = await lpBridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
           setButtonText('Approve + Send')
         }

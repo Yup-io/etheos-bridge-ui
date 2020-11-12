@@ -60,6 +60,7 @@
     "pull-file-reader": "^1.0.2",
     "query-string": "^6.12.1",
     "react": "^16.13.1",
+    "react-animated-dots": "^1.1.0",
     "react-clamp": "^1.0.5",
     "react-content-loader": "^4.2.2",
     "react-countup": "^4.3.3",
