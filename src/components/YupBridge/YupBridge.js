@@ -206,8 +206,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
     const wrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
     setUnwrappedYUPETHbalance(wrapYUPETHbalance)
-    const balToUnwrap = web3.utils.toWei(wrapYUPETHbalance.toString())
-    console.log('balToUnwrap :>> ', balToUnwrap)
     if (wrapYUPETHbalance === 0) { return }
     setUnwrapDialogOpen(true)
   }
