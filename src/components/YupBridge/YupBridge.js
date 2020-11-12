@@ -13,6 +13,7 @@ import { connect } from 'react-redux'
 import { useWeb3React } from '@web3-react/core'
 import Web3 from 'web3'
 import ERC20ABI from './abi/ERC20ABI.abi.json'
+import ERC20WRAPABI from './abi/ERC20WrapABI.abi.json'
 import BridgeABI from './abi/BridgeABI.abi.json'
 import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
@@ -178,6 +179,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [bridgeFee, setBridgeFee] = useState(0.0000)
   const [total, setTotal] = useState(0.0000)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
+  const [buttonText, setButtonText] = useState('Approve + Send')
 
   useEffect(() => {
     setChain(account ? 'EOS' : 'ETH')
@@ -239,25 +241,30 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     }
     try {
       if (account) {
-        // const activeBridge = (token === 'YUP' ? YUP_BRIDGE_CONTRACT_ETH : LP_BRIDGE_CONTRACT_ETH)
-        // const activeToken = (token === 'YUP' ? YUP_TOKEN_ETH : LP_WRAP_TOKEN_ETH)
-
         const allowance = web3.utils.toWei(sendBal.toString())
         const value = web3.utils.toBN(allowance)
         const memoUINT64 = nameToUint64(memo)
         if (token === 'YUP') {
           const tokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
           const yupBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
+          setButtonText('Approving YUP')
           await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
+          setButtonText('Sending YUP')
           txRes = await yupBridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
+          setButtonText('Approve + Send')
         } else if (token === 'YUPETH') {
-          const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // 0x67de7939c0686686c037f19dcf26f173d6bedcaf
-          const wrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_WRAP_TOKEN_ETH) // 0x3567989f926c8045598f90cc78d9779530e62239
-          const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, LP_BRIDGE_CONTRACT_ETH) // 0xF5FC1c2c93F9d1FA5423bc83f76A8B0637947534
-
+          const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
+          const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
+          const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, LP_BRIDGE_CONTRACT_ETH) // ropsten 0xF5FC1c2c93F9d1FA5423bc83f76A8B0637947534
+          setButtonText('Approving YUPETH')
           await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account })
+          setButtonText('Wrapping YUPETH')
           await wrapTokenInstance.methods.wrap(allowance).send({ from: account })
-          await lpBridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
+          setButtonText('Approving Bridge Contract')
+          await wrapTokenInstance.methods.approve(LP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
+          setButtonText('Sending YUPETH')
+          txRes = await lpBridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
+          setButtonText('Approve + Send')
         }
       } else if (scatterAccount) {
           const txData = {
@@ -269,7 +276,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         }
         txRes == null ? snackbarErrorMessage() : successDialog()
       } catch (e) {
-        console.log('error is here :>> ', e)
         snackbarErrorMessage()
     }
   }
@@ -285,6 +291,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       severity: 'error',
       msg: 'There was an error with your transaction. Please try again.',
       snackbar: true })
+      setButtonText('Approve + Send')
   }
 
   const handleSnackbarClose = (event, reason) => {
@@ -551,6 +558,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           </MuiThemeProvider>
 
           <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none' }}
+            disabled={buttonText !== 'Approve + Send'}
             onClick={() => {
             if (isNaN(sendBal)) {
               setError({
@@ -563,7 +571,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           }}
             className={classes.sendBtn}
           >
-            Approve + Send
+            {buttonText}
           </Button>
         </div>
       </div>

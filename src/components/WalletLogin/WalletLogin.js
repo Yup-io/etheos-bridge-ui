@@ -289,7 +289,7 @@ const WalletLogin = (props) => {
                       alignItems='center'
                     >
                       <Grid item>
-                        Yup/Scatter
+                        Yup
                       </Grid>
                       <Grid item>
                         <img className={classes.walletIcon}
