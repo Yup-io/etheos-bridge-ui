@@ -363,6 +363,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         <DialogTitle id='form-dialog-title'>Success</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.disclaimerText}>
+            It may take up to 30 minutes to receive your transaction on the other chain.
             You have successfully transferred {sendBal} {token}!
           </DialogContentText>
           <DialogContentText className={classes.disclaimerText}>
