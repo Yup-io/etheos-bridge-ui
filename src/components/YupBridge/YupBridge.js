@@ -20,7 +20,7 @@ import { transfer } from '../../eos/actions'
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
+const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_WRAP_TOKEN_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 
 const styles = theme => ({
   container: {
@@ -238,14 +238,28 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     }
     try {
       if (account) {
-        const transferAmount = web3.utils.toWei(sendBal.toString())
-        const tokenInstance = new web3.eth.Contract(ERC20ABI, (token === 'YUP' ? YUP_TOKEN_ETH : LP_UNWRAP_TOKEN_ETH))
-        const bridgeContractInstance = new web3.eth.Contract(BridgeABI, (token === 'YUP' ? YUP_BRIDGE_CONTRACT_ETH : LP_BRIDGE_CONTRACT_ETH))
-        const value = web3.utils.toBN(transferAmount)
+        // const activeBridge = (token === 'YUP' ? YUP_BRIDGE_CONTRACT_ETH : LP_BRIDGE_CONTRACT_ETH)
+        // const activeToken = (token === 'YUP' ? YUP_TOKEN_ETH : LP_WRAP_TOKEN_ETH)
+
+        const allowance = web3.utils.toWei(sendBal.toString())
+        const value = web3.utils.toBN(allowance)
         const memoUINT64 = nameToUint64(memo)
-        console.log(token === 'YUP' ? YUP_BRIDGE_CONTRACT_ETH : LP_BRIDGE_CONTRACT_ETH)
-        await tokenInstance.methods.approve((token === 'YUP' ? YUP_BRIDGE_CONTRACT_ETH : LP_BRIDGE_CONTRACT_ETH), transferAmount).send({ from: account })
-        txRes = await bridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
+        if (token === 'YUP') {
+          const tokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
+          const yupBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
+          await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
+          txRes = await yupBridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
+        } else if (token === 'YUPETH') {
+          const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH)
+          console.log('unwrapTokenInstance :>> ', unwrapTokenInstance)
+          const wrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_WRAP_TOKEN_ETH)
+          console.log('wrapTokenInstance :>> ', wrapTokenInstance)
+          const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
+
+          await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account })
+          await wrapTokenInstance.methods.wrap(allowance).send({ from: account })
+          await lpBridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
+        }
       } else if (scatterAccount) {
           const txData = {
             amount: sendBal,
@@ -256,6 +270,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         }
         txRes == null ? snackbarErrorMessage() : successDialog()
       } catch (e) {
+        console.log('error is here :>> ', e)
         snackbarErrorMessage()
     }
   }
