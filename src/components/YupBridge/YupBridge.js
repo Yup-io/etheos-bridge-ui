@@ -217,10 +217,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const wrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
     const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
     const balToUnwrap = web3.utils.toWei(wrapYUPETHbalance.toString())
-    setUnwrapButtonText('Approving YUPETEH unwrap...')
+    setUnwrapButtonText('Approving...')
     await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, balToUnwrap).send({ from: account })
-    setUnwrapButtonText('Unwrapping YUPETEH...')
-    await wrapTokenInstance.methods.unwrap(wrapYUPETHbalance).send({ from: account })
+    setUnwrapButtonText('Unwrapping YUPETH...')
+    await wrapTokenInstance.methods.unwrap(balToUnwrap).send({ from: account })
+    setUnwrapButtonText('Success!')
+    fetchAndSetBalance()
   }
 
   const handleBalanceChange = (e) => {
@@ -398,7 +400,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             }
               fullWidth
               variant='outlined'
-              style={{ backgroundColor: '#04C399', borderRadius: 10 }}
+              className={classes.sendBtn}
             >
               {unwrapButtonText}
             </Button>
