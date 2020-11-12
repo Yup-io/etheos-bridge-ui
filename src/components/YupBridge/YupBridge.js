@@ -368,7 +368,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           <DialogContentText className={classes.disclaimerText}>
             <strong style={{ color: 'white' }}><a style={{ color: 'white' }}
               target='_blank'
-              href={`https://etherscan.io/address/${ethAddress}#tokentxns`}
+              href={`https://etherscan.io/address/${ethAddress || memo}#tokentxns`}
                                                >See Address on Etherscan ↗️</a></strong>
           </DialogContentText>
         </DialogContent>
