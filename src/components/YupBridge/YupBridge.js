@@ -223,6 +223,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     await wrapTokenInstance.methods.unwrap(balToUnwrap).send({ from: account })
     setUnwrapButtonText('Success!')
     fetchAndSetBalance()
+    setUnwrapDialogOpen(false)
   }
 
   const handleBalanceChange = (e) => {
@@ -389,7 +390,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         <DialogTitle id='form-dialog-title'>Unwrap</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.disclaimerText}>
-            You have {unwrappedYUPETHbalance} YUPETEH to unwrap.
+            You have {numeral(unwrappedYUPETHbalance).format('0,0.00') } YUPETH to unwrap.
           </DialogContentText>
           <DialogContentText className={classes.disclaimerText}>
             <Button
