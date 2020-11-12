@@ -20,7 +20,7 @@ import { transfer } from '../../eos/actions'
 import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_WRAP_TOKEN_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
+const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 
 const styles = theme => ({
   container: {
@@ -250,11 +250,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
           txRes = await yupBridgeContractInstance.methods.sendToken(value, memoUINT64).send({ from: account })
         } else if (token === 'YUPETH') {
-          const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH)
-          console.log('unwrapTokenInstance :>> ', unwrapTokenInstance)
-          const wrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_WRAP_TOKEN_ETH)
-          console.log('wrapTokenInstance :>> ', wrapTokenInstance)
-          const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
+          const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // 0x67de7939c0686686c037f19dcf26f173d6bedcaf
+          const wrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_WRAP_TOKEN_ETH) // 0x3567989f926c8045598f90cc78d9779530e62239
+          const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, LP_BRIDGE_CONTRACT_ETH) // 0xF5FC1c2c93F9d1FA5423bc83f76A8B0637947534
+          console.log('object :>> ', lpBridgeContractInstance)
 
           await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account })
           await wrapTokenInstance.methods.wrap(allowance).send({ from: account })
