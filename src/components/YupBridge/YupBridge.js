@@ -182,7 +182,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [buttonText, setButtonText] = useState('Approve + Send')
   const [unwrapButtonText, setUnwrapButtonText] = useState('Unwrap')
   const [unwrappedYUPETHbalance, setUnwrappedYUPETHbalance] = useState(0)
-  const [unwrapDialogOpen, setUnwrapDialogOpen] = useState(true)
+  const [unwrapDialogOpen, setUnwrapDialogOpen] = useState(false)
 
   useEffect(() => {
     setChain(account ? 'EOS' : 'ETH')
