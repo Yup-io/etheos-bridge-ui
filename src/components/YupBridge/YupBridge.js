@@ -213,13 +213,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const unwrapTokens = async () => {
     try {
       const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
-      const wrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
+      const rawWrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call()
       const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
-      const balToUnwrap = web3.utils.toWei(wrapYUPETHbalance.toString())
       setUnwrapButtonText('Approving...')
-      await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, balToUnwrap).send({ from: account })
+      await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance).send({ from: account })
       setUnwrapButtonText('Unwrapping YUPETH...')
-      await wrapTokenInstance.methods.unwrap(balToUnwrap).send({ from: account })
+      await wrapTokenInstance.methods.unwrap(rawWrapYUPETHbalance).send({ from: account })
       setUnwrapButtonText('Success!')
       fetchAndSetBalance()
       setUnwrapDialogOpen(false)
