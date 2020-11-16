@@ -22,6 +22,7 @@ import axios from 'axios'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
+const YUPETH_TRANSFER_MODAL_INFO_TEXT = ` Make sure to unwrap your tokens back to UNI LP via this bridge when it arrives, by connecting your receiving metamask address.`
 
 const styles = theme => ({
   container: {
@@ -369,8 +370,11 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         <DialogTitle id='form-dialog-title'>Success</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.disclaimerText}>
-            It may take up to 30 minutes to receive your transaction on the other chain.
             You have successfully transferred {sendBal} {token}!
+
+            It may take up to 30 minutes to receive your transaction on the other chain.
+
+            {token === 'YUPETH' && chain === 'ETH' ? YUPETH_TRANSFER_MODAL_INFO_TEXT : ''}
           </DialogContentText>
           <DialogContentText className={classes.disclaimerText}>
             <strong style={{ color: 'white' }}><a style={{ color: 'white' }}
