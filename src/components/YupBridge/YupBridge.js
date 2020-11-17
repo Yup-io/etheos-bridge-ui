@@ -279,9 +279,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         snackbar: true })
         return
     }
+
     try {
       if (account) {
-        const allowance = web3.utils.toWei((5 * sendBal).toString()) // * 5 to prevent requiring too many approvals
+        const allowance = web3.utils.toWei((5 * sendBal).toString()) // multiplied to prevent requiring too many approvals
         const amountInWei = web3.utils.toWei(sendBal.toString())
         const bigNumVal = web3.utils.toBN(amountInWei)
         const memoUINT64 = nameToUint64(memo)
@@ -289,18 +290,24 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, LP_BRIDGE_CONTRACT_ETH) // ropsten 0xF5FC1c2c93F9d1FA5423bc83f76A8B0637947534
         const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
         const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
+        const yupBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
+        const tokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
 
         const preApprovedUnwrap = await unwrapTokenInstance.methods.allowance(account, LP_WRAP_TOKEN_ETH).call()
         const preApprovedWrap = await wrapTokenInstance.methods.allowance(account, LP_BRIDGE_CONTRACT_ETH).call()
+        const preApprovedBridge = await tokenInstance.methods.allowance(account, YUP_BRIDGE_CONTRACT_ETH).call()
 
         if (token === 'YUP') {
-          const tokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
-          const yupBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
-          setButtonText('Approving YUP...')
-          await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
+          console.log('preApprovedBridge :>> ', preApprovedBridge)
+          console.log('amountInWei :>> ', amountInWei)
+          if (preApprovedBridge < amountInWei) {
+            setButtonText('Approving YUP...')
+            await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
+          }
           setButtonText('Sending YUP...')
           txRes = await yupBridgeContractInstance.methods.sendToken(bigNumVal, memoUINT64).send({ from: account })
         } else if (token === 'YUPETH') {
+          console.log('preApprovedUnwrap :>> ', preApprovedUnwrap)
           if (preApprovedUnwrap < amountInWei) {
             setButtonText('Approving YUPETH...')
             await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account })
@@ -335,10 +342,11 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     document.getElementById('send-bal-field').value = ''
     document.getElementById('address-field').value = ''
     setButtonText('Approve + Send')
+    fetchAndSetBalance()
   }
 
   const snackbarErrorMessage = (err) => {
-    console.log('err :>> ', err)
+    console.log('tx err :>> ', err)
     setError({
       severity: 'error',
       msg: 'There was an error with your transaction. Please try again.',
