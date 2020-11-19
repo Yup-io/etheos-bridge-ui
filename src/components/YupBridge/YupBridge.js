@@ -23,7 +23,7 @@ import axios from 'axios'
 const web3 = new Web3(new Web3(Web3.givenProvider))
 const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 const YUPETH_TRANSFER_MODAL_INFO_TEXT = ` Make sure to unwrap your tokens back to UNI LP via this bridge when it arrives, by connecting your receiving metamask address.`
-
+const ALLOWANCE_MULTIPLIER = 1
 const styles = theme => ({
   container: {
     width: '100%',
@@ -185,6 +185,15 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [unwrappedYUPETHbalance, setUnwrappedYUPETHbalance] = useState(0)
   const [unwrapDialogOpen, setUnwrapDialogOpen] = useState(false)
 
+  let txBucket = []
+  let approvalTxBucket = []
+
+  const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, LP_BRIDGE_CONTRACT_ETH) // ropsten 0xF5FC1c2c93F9d1FA5423bc83f76A8B0637947534
+  const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
+  const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
+  const yupBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
+  const yupTokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
+
   useEffect(() => {
     setChain(account ? 'EOS' : 'ETH')
     fetchAndSetBalance()
@@ -193,6 +202,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   // check if there is wrappeth YUPETH and trigger unwrap if so
   useEffect(() => {
    checkForWrappedYUPETH()
+   setSendBal(0.001)
+   setMemo('plubplubplux')
   }, [account])
 
   useEffect(() => {
@@ -204,7 +215,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }, [token, sendBal, account, scatter])
 
   const checkForWrappedYUPETH = async () => {
-    const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
     const wrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
     setUnwrappedYUPETHbalance(wrapYUPETHbalance)
     if (wrapYUPETHbalance > 0) { setUnwrapDialogOpen(true) }
@@ -212,21 +222,15 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const unwrapTokens = async () => {
     try {
-      const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
       const rawWrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call()
-      const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
       setUnwrapButtonText('Approving...')
-      await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance).send({ from: account })
+      await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance * ALLOWANCE_MULTIPLIER).send({ from: account })
       setUnwrapButtonText('Unwrapping YUPETH...')
       await wrapTokenInstance.methods.unwrap(rawWrapYUPETHbalance).send({ from: account })
-      setUnwrapButtonText('Success!')
-      fetchAndSetBalance()
-      setUnwrapDialogOpen(false)
-      setUnwrapButtonText('Unwrap')
+      resetState()
     } catch (err) {
-      setUnwrapDialogOpen(false)
       snackbarErrorMessage(err)
-      setUnwrapButtonText('Unwrap')
+      resetState()
     }
   }
 
@@ -249,9 +253,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         setAccountBal(data.balance[token])
       } else if (account) {
         setETHAddress(account) // store eth address for tx success modal
-        const tokenInstance = new web3.eth.Contract(ERC20ABI, token === 'YUP' ? YUP_TOKEN_ETH : LP_UNWRAP_TOKEN_ETH)
-        const erc20TokenBalance = await tokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
-        setAccountBal(erc20TokenBalance)
+        const flexTokenInstance = new web3.eth.Contract(ERC20ABI, token === 'YUP' ? YUP_TOKEN_ETH : LP_UNWRAP_TOKEN_ETH)
+        const balance = await flexTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
+        setAccountBal(balance)
     }
    } catch (err) {
       setAccountBal(0.00)
@@ -270,7 +274,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     setChain(e.target.value)
   }
 
-  const sendToken = async () => {
+  const bridgeToken = async () => {
     let txRes
     if (sendBal > accountBal) {
       setError({
@@ -279,79 +283,75 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         snackbar: true })
         return
     }
-
     try {
       if (account) {
-        const allowance = web3.utils.toWei((5 * sendBal).toString()) // multiplied to prevent requiring too many approvals
+        const allowance = web3.utils.toWei((ALLOWANCE_MULTIPLIER * sendBal).toString()) // multiplied to prevent requiring too many approvals
         const amountInWei = web3.utils.toWei(sendBal.toString())
         const bigNumVal = web3.utils.toBN(amountInWei)
         const memoUINT64 = nameToUint64(memo)
 
-        const lpBridgeContractInstance = new web3.eth.Contract(BridgeABI, LP_BRIDGE_CONTRACT_ETH) // ropsten 0xF5FC1c2c93F9d1FA5423bc83f76A8B0637947534
-        const unwrapTokenInstance = new web3.eth.Contract(ERC20ABI, LP_UNWRAP_TOKEN_ETH) // ropsten 0x67de7939c0686686c037f19dcf26f173d6bedcaf
-        const wrapTokenInstance = new web3.eth.Contract(ERC20WRAPABI, LP_WRAP_TOKEN_ETH) // ropsten 0x3567989f926c8045598f90cc78d9779530e62239
-        const yupBridgeContractInstance = new web3.eth.Contract(BridgeABI, YUP_BRIDGE_CONTRACT_ETH)
-        const tokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
-
-        const preApprovedUnwrap = await unwrapTokenInstance.methods.allowance(account, LP_WRAP_TOKEN_ETH).call()
-        const preApprovedWrap = await wrapTokenInstance.methods.allowance(account, LP_BRIDGE_CONTRACT_ETH).call()
-        const preApprovedBridge = await tokenInstance.methods.allowance(account, YUP_BRIDGE_CONTRACT_ETH).call()
+        // const preApprovedUnwrap = await unwrapTokenInstance.methods.allowance(account, LP_WRAP_TOKEN_ETH).call()
+        // const preApprovedWrap = await wrapTokenInstance.methods.allowance(account, LP_BRIDGE_CONTRACT_ETH).call()
+        // const preApprovedBridge = await yupTokenInstance.methods.allowance(account, YUP_BRIDGE_CONTRACT_ETH).call()
 
         if (token === 'YUP') {
-          console.log('preApprovedBridge :>> ', preApprovedBridge)
-          console.log('amountInWei :>> ', amountInWei)
-          if (preApprovedBridge < amountInWei) {
-            setButtonText('Approving YUP...')
-            await tokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
-          }
-          setButtonText('Sending YUP...')
-          txRes = await yupBridgeContractInstance.methods.sendToken(bigNumVal, memoUINT64).send({ from: account })
-        } else if (token === 'YUPETH') {
-          console.log('preApprovedUnwrap :>> ', preApprovedUnwrap)
-          if (preApprovedUnwrap < amountInWei) {
-            setButtonText('Approving YUPETH...')
-            await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account })
-          }
-          setButtonText('Wrapping YUPETH...')
-          await wrapTokenInstance.methods.wrap(amountInWei).send({ from: account })
-
-          if (preApprovedWrap < amountInWei) {
-            setButtonText('Approving Bridge Contract...')
-            await wrapTokenInstance.methods.approve(LP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })
-          }
-
-          setButtonText('Sending YUPETH...')
-          txRes = await lpBridgeContractInstance.methods.sendToken(bigNumVal, memoUINT64).send({ from: account })
+          // if (preApprovedBridge < amountInWei) { approvalTxBucket.push(yupTokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })) }
+          approvalTxBucket.push(yupTokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account }))
+          txBucket.push(yupBridgeContractInstance.methods.sendToken(bigNumVal, memoUINT64).send({ from: account }))
         }
-      } else if (scatterAccount) {
-          const txData = {
-            amount: sendBal,
-            asset: token,
-            recipient: memo
-          }
-          txRes = await transfer(scatterAccount, txData)
+
+        if (token === 'YUPETH') {
+          // if (preApprovedUnwrap < amountInWei) { approvalTxBucket.push(unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account })) }
+          // if (preApprovedWrap < amountInWei) { approvalTxBucket.push(wrapTokenInstance.methods.approve(LP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account })) }
+          approvalTxBucket.push(unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account }))
+          approvalTxBucket.push(wrapTokenInstance.methods.approve(LP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account }))
+          txBucket.push(wrapTokenInstance.methods.wrap(amountInWei).send({ from: account }))
+          txBucket.push(lpBridgeContractInstance.methods.sendToken(bigNumVal, memoUINT64).send({ from: account }))
         }
-        txRes == null ? snackbarErrorMessage() : successDialog()
-      } catch (err) {
+      }
+
+      if (scatterAccount) {
+          const txData = { amount: sendBal, asset: token, recipient: memo }
+          txBucket.push(transfer(scatterAccount, txData))
+        }
+
+        console.log('approval bucket start')
+        setButtonText(`Approving ${token}...`)
+        await Promise.all(approvalTxBucket)
+        console.log('approval bucket end')
+        setButtonText(`Sending ${token}...`)
+        txRes = await Promise.all(txBucket)
+        console.log('noraml bucket end')
+
+        txRes == null ? snackbarErrorMessage(txRes) : successDialog()
+    } catch (err) {
         snackbarErrorMessage(err)
     }
   }
 
   const successDialog = () => {
     setSuccessDialogOpen(true)
+    resetState()
+  }
+
+  const resetState = () => {
+    txBucket = []
+    approvalTxBucket = []
     document.getElementById('send-bal-field').value = ''
     document.getElementById('address-field').value = ''
     setButtonText('Approve + Send')
+    setUnwrapButtonText('Unwrap')
+    setUnwrapDialogOpen(false)
     fetchAndSetBalance()
   }
 
   const snackbarErrorMessage = (err) => {
-    console.log('tx err :>> ', err)
+    resetState()
     setError({
       severity: 'error',
       msg: 'There was an error with your transaction. Please try again.',
       snackbar: true })
-      setButtonText('Approve + Send')
+      console.log('err :>> ', err)
   }
 
   const handleSnackbarClose = (event, reason) => {
@@ -418,7 +418,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         <DialogTitle id='form-dialog-title'>Unwrap</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.disclaimerText}>
-            You have {numeral(unwrappedYUPETHbalance).format('0,0.00') } YUPETH to unwrap.
+            You have {numeral(unwrappedYUPETHbalance).format('0,0.0000') } YUPETH to unwrap.
           </DialogContentText>
           <DialogContentText className={classes.disclaimerText}>
             <Button
@@ -655,17 +655,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           </MuiThemeProvider>
 
           <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none' }}
-            disabled={buttonText !== 'Approve + Send'}
-            onClick={() => {
-            if (isNaN(sendBal)) {
-              setError({
-                  severity: 'warning',
-                  msg: 'Please enter a valid staking amount.',
-                  snackbar: true })
-            } else {
-              sendToken()
-            }
-          }}
+            disabled={buttonText !== 'Approve + Send' || sendBal > accountBal || isNaN(sendBal)}
+            onClick={async () => {
+              await bridgeToken()
+            }}
             className={classes.sendBtn}
           >
             {buttonText}
