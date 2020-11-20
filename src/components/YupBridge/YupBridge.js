@@ -179,7 +179,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [error, setError] = useState({ severity: 'warning', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
   const [bridgeFee, setBridgeFee] = useState(0.0000)
   const [total, setTotal] = useState(0.0000)
-  const [successDialogOpen, setSuccessDialogOpen] = useState(false)
+  const [successDialogOpen, setSuccessDialogOpen] = useState(true)
   const [buttonText, setButtonText] = useState('Approve + Send')
   const [unwrapButtonText, setUnwrapButtonText] = useState('Unwrap')
   const [unwrappedYUPETHbalance, setUnwrappedYUPETHbalance] = useState(0)
@@ -230,7 +230,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       resetState()
     } catch (err) {
       snackbarErrorMessage(err)
-      resetState()
     }
   }
 
@@ -315,14 +314,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           txBucket.push(transfer(scatterAccount, txData))
         }
 
-        console.log('approval bucket start')
         setButtonText(`Approving ${token}...`)
+        console.log('approvalTxBucket :>> ', approvalTxBucket)
         await Promise.all(approvalTxBucket)
-        console.log('approval bucket end')
         setButtonText(`Sending ${token}...`)
-        txRes = await Promise.all(txBucket)
+        // txRes = await Promise.all(txBucket)
         console.log('noraml bucket end')
-
         txRes == null ? snackbarErrorMessage(txRes) : successDialog()
     } catch (err) {
         snackbarErrorMessage(err)
@@ -382,7 +379,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             backgroundColor: '#1A1A1A',
             color: '#F7F7F7',
             width: '400px',
-            fontFamily: 'Rubik, sans serif'
+            fontFamily: 'Rubik, sans serif',
+            boxShadow: '2px 2px 7px #00eab799, -2px -2px 7px #f890e7aa, inset -3px -3px 10px #6a6a6a33'
           }
         }}
       >
