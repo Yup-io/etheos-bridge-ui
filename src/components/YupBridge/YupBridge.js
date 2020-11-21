@@ -229,8 +229,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     try {
       setLoading(true)
       const rawWrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call()
+
       setUnwrapButtonText('Approving...')
-      await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance * ALLOWANCE_MULTIPLIER).send({ from: account })
+      await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance).send({ from: account })
       setUnwrapButtonText('Unwrapping YUPETH...')
       await wrapTokenInstance.methods.unwrap(rawWrapYUPETHbalance).send({ from: account })
       setLoading(false)
@@ -302,25 +303,29 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         const preApprovedUnwrap = await unwrapTokenInstance.methods.allowance(account, LP_WRAP_TOKEN_ETH).call()
         const preApprovedWrap = await wrapTokenInstance.methods.allowance(account, LP_BRIDGE_CONTRACT_ETH).call()
         const preApprovedBridge = await yupTokenInstance.methods.allowance(account, YUP_BRIDGE_CONTRACT_ETH).call()
+        console.log('preApprovedBridge :>> ', preApprovedBridge)
+        console.log('preApprovedWrap :>> ', preApprovedWrap)
+        console.log('preApprovedUnwrap :>> ', preApprovedUnwrap)
 
         if (token === 'YUP' && preApprovedBridge < amountInWei) {
-         approvalTxBucket.push(yupTokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account }))
+          approvalTxBucket.push(yupTokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account }))
         }
 
         if (token === 'YUPETH' && (preApprovedUnwrap < amountInWei || preApprovedWrap < amountInWei)) {
-           approvalTxBucket.push(unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account }))
-           approvalTxBucket.push(wrapTokenInstance.methods.approve(LP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account }))
+          approvalTxBucket.push(unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowance).send({ from: account }))
+          approvalTxBucket.push(wrapTokenInstance.methods.approve(LP_BRIDGE_CONTRACT_ETH, allowance).send({ from: account }))
         }
+
         setLoading(true)
         setButtonText(`Approving ${token}...`)
-        await Promise.all(approvalTxBucket)
 
         if (token === 'YUP') { txBucket.push(yupBridgeContractInstance.methods.sendToken(bigNumVal, memoUINT64).send({ from: account })) }
 
         if (token === 'YUPETH') {
-        txBucket.push(wrapTokenInstance.methods.wrap(amountInWei).send({ from: account }))
+        txBucket.push(wrapTokenInstance.methods.wrap(bigNumVal).send({ from: account }))
         txBucket.push(lpBridgeContractInstance.methods.sendToken(bigNumVal, memoUINT64).send({ from: account }))
         }
+        await Promise.all(approvalTxBucket)
 
         setButtonText(`Sending ${token}...`)
         txRes = await Promise.all(txBucket)
@@ -333,7 +338,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           const txData = { amount: sendBal, asset: token, recipient: memo }
           txRes = await transfer(scatterAccount, txData)
       }
-      console.log('txRes :>> ', txRes)
       txRes == null ? snackbarErrorMessage(txRes) : successDialog()
     } catch (err) {
         snackbarErrorMessage(err)

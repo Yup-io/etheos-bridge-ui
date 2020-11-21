@@ -26,10 +26,6 @@ class Index extends Component {
             color={'#00eab7'}
             loading={this.state.isLoading}
           />
-          <img
-            style={{ position: 'absolute', width: 33 }}
-            src='images/logos/logogreen.svg'
-          />
         </div>
       )
     }
