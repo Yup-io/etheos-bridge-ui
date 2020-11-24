@@ -9,7 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 // const CONTRACTS_LINK = '#'
 const DISCORD_LINK = 'https://discord.gg/KED2nHS'
 const YUP_LINK = 'http://yup.io/'
-const UNISWAP_LINK = 'https://app.uniswap.org/#/swap?inputCurrency=0x69bBC3F8787d573F1BBDd0a5f40C7bA0Aee9BCC9'
+const UNISWAP_LINK = 'https://info.uniswap.org/pair/0x916560c92f423bf7d20f34591a6b27a254c3bd7a'
 
 const styles = theme => ({
   footer: {
