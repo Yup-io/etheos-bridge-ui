@@ -312,7 +312,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           approvalTxBucket.push(yupTokenInstance.methods.approve(YUP_BRIDGE_CONTRACT_ETH, allowanceBN).send({ from: account }))
         }
 
-        if (token === 'YUPETH' && (preApprovedUnwrap.lt(allowanceBN) || preApprovedWrap.lt(allowanceBN))) {
+        if (token === 'YUPETH' && (preApprovedUnwrap.lt(sendBalBN) || preApprovedWrap.lt(sendBalBN))) {
           approvalTxBucket.push(unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, allowanceBN).send({ from: account }))
           approvalTxBucket.push(wrapTokenInstance.methods.approve(LP_BRIDGE_CONTRACT_ETH, allowanceBN).send({ from: account }))
         }
