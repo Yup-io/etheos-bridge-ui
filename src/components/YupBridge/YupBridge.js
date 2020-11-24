@@ -228,7 +228,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const unwrapTokens = async () => {
     try {
       setLoading(true)
-      const rawWrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call()
+      // const preApprovedYUPETH = toBN(await wrapTokenInstance.methods.allowance(account, LP_WRAP_TOKEN_ETH).call())
+      const rawWrapYUPETHbalance = toBN(await wrapTokenInstance.methods.balanceOf(account).call())
+      // if (preApprovedYUPETH.lt(rawWrapYUPETHbalance)) {
+      //   setUnwrapButtonText('Approving...')
+      //   await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance * ALLOWANCE_MULTIPLIER).send({ from: account })
+      // }
       setUnwrapButtonText('Approving...')
       await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance * ALLOWANCE_MULTIPLIER).send({ from: account })
       setUnwrapButtonText('Unwrapping YUPETH...')
