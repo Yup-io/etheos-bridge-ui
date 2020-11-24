@@ -28,6 +28,15 @@ const styles = theme => ({
     }
   },
   disclaimerText: {
+    fontFamily: 'Rubik',
+    color: '#C4C4C4',
+    fontWeight: '300',
+    border: '1px solid #BE1E2D',
+    borderRadius: '5px',
+    padding: '5px'
+  },
+  aboutText: {
+    fontFamily: 'Rubik',
     color: '#C4C4C4',
     fontWeight: '300'
   }
@@ -68,10 +77,10 @@ class Footer extends Component {
             <DialogContentText className={classes.disclaimerText}>
               ⚠️ This is highly experimental technology. Please use with caution and at your own risk.
             </DialogContentText>
-            <DialogContentText className={classes.disclaimerText}>
+            <DialogContentText className={classes.aboutText}>
               <strong style={{ color: 'white' }}>Contracts:</strong>
             </DialogContentText>
-            <DialogContentText className={classes.disclaimerText}>
+            <DialogContentText className={classes.aboutText}>
               <ul>
                 <li>
                   <a className={classes.link}

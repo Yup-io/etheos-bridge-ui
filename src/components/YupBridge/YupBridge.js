@@ -26,6 +26,9 @@ const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_
 const YUPETH_TRANSFER_MODAL_INFO_TEXT = ` Make sure to unwrap your tokens back to UNI LP via this bridge when it arrives, by connecting your receiving metamask address.`
 
 const styles = theme => ({
+  snackbar: {
+    fontFamily: 'Rubik'
+  },
   container: {
     width: '100%',
     padding: '0px',
@@ -128,7 +131,6 @@ const styles = theme => ({
     [theme.breakpoints.down('xs')]: {
       fontSize: '0.9rem'
     }
-
   },
   sendBtn: {
     backgroundColor: '#04C399',
@@ -156,6 +158,12 @@ const styles = theme => ({
     fontWeight: '300'
   }
 })
+
+const VoteLoader = props => (
+  <CircularProgress size={35}
+    style={{ color: '#fff' }}
+  />
+)
 
 const theme = createMuiTheme({
   palette: {
@@ -393,6 +401,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   return (
     <>
       <Snackbar open={error.snackbar}
+        className={classes.snackbar}
         autoHideDuration={4000}
         onClose={handleSnackbarClose}
         message={error.msg}
@@ -611,12 +620,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                     <MenuItem
                       className={classes.menu}
                       value='ETH'
-                      style={{ pointerEvents: account ? 'none' : '' }}
                     >Ethereum</MenuItem>
                     <MenuItem
                       className={classes.menu}
                       value='EOS'
-                      style={{ pointerEvents: scatterAccount ? 'none' : '' }}
                     >EOS</MenuItem>
                   </Select>
                 </FormControl>
@@ -696,8 +703,11 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               <Grid item
                 xs={6}
               >
-                <Tooltip placement='bottom-start'
-                  title='In order to ensure stability of the bridge, there needs to be a minimum set for bridging'
+                <Tooltip
+                  placement='bottom-start'
+                  title={<h color='#fff'
+                    style={{ fontSize: '14px' }}
+                         >{MIN_BRIDGE_MSG}</h>}
                 >
                   <Typography className={classes.feeText}>Minimum to bridge
                   </Typography>
