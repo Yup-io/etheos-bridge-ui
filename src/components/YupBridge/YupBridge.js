@@ -19,11 +19,11 @@ import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
 import axios from 'axios'
+import rollbar from 'rollbar'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 const YUPETH_TRANSFER_MODAL_INFO_TEXT = ` Make sure to unwrap your tokens back to UNI LP via this bridge when it arrives, by connecting your receiving metamask address.`
-const ALLOWANCE_MULTIPLIER = 5
 
 const styles = theme => ({
   container: {
@@ -189,6 +189,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [unwrapDialogOpen, setUnwrapDialogOpen] = useState(false)
   const [successHash, setSuccessHash] = useState('')
   const [loading, setLoading] = useState(false)
+  const [modalLoading, setModalLoading] = useState(false)
 
   // let txBucket = []
   let approvalTxBucket = []
@@ -227,19 +228,20 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   const unwrapTokens = async () => {
     try {
-      setLoading(true)
+      setModalLoading(true)
       // const preApprovedYUPETH = toBN(await wrapTokenInstance.methods.allowance(account, LP_WRAP_TOKEN_ETH).call())
-      const rawWrapYUPETHbalance = toBN(await wrapTokenInstance.methods.balanceOf(account).call())
+      const rawWrapYUPETHbalance = await wrapTokenInstance.methods.balanceOf(account).call()
       // if (preApprovedYUPETH.lt(rawWrapYUPETHbalance)) {
       //   setUnwrapButtonText('Approving...')
       //   await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance * ALLOWANCE_MULTIPLIER).send({ from: account })
       // }
       setUnwrapButtonText('Approving...')
-      await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance * ALLOWANCE_MULTIPLIER).send({ from: account })
+      await unwrapTokenInstance.methods.approve(LP_WRAP_TOKEN_ETH, rawWrapYUPETHbalance).send({ from: account })
       setUnwrapButtonText('Unwrapping YUPETH...')
       await wrapTokenInstance.methods.unwrap(rawWrapYUPETHbalance).send({ from: account })
       resetState()
     } catch (err) {
+      rollbar.error(`Failed to unwrap tokens error=${JSON.stringify(err, null, 2)}`)
       snackbarErrorMessage(err)
     }
   }
@@ -268,6 +270,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         setAccountBal(balance)
     }
    } catch (err) {
+      rollbar.error(`Failed to fetch balance error=${JSON.stringify(err, null, 2)}`)
       setAccountBal(0.00)
     }
   }
@@ -350,6 +353,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
       txRes == null ? snackbarErrorMessage(txRes) : successDialog()
     } catch (err) {
+        rollbar.error(`Failed to bridge ${token} to ${account ? 'EOS' : 'ethereum'} tokens error=${JSON.stringify(err, null, 2)}`)
         snackbarErrorMessage(err)
     }
   }
@@ -369,6 +373,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     setUnwrapDialogOpen(false)
     fetchAndSetBalance()
     setLoading(false)
+    setModalLoading(false)
   }
 
   const snackbarErrorMessage = (err) => {
@@ -483,6 +488,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               className={classes.sendBtn}
             >
               {unwrapButtonText}
+              {modalLoading && (<CircularProgress size={30}
+                style={{ color: 'white', position: 'relative', left: 45 }}
+                                />)}
             </Button>
           </DialogContentText>
         </DialogContent>
