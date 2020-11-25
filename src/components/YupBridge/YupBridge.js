@@ -19,7 +19,6 @@ import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
 import axios from 'axios'
-import rollbar from 'rollbar'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
@@ -241,7 +240,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       await wrapTokenInstance.methods.unwrap(rawWrapYUPETHbalance).send({ from: account })
       resetState()
     } catch (err) {
-      rollbar.error(`Failed to unwrap tokens error=${JSON.stringify(err, null, 2)}`)
       snackbarErrorMessage(err)
     }
   }
@@ -270,7 +268,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         setAccountBal(balance)
     }
    } catch (err) {
-      rollbar.error(`Failed to fetch balance error=${JSON.stringify(err, null, 2)}`)
       setAccountBal(0.00)
     }
   }
@@ -353,7 +350,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
       txRes == null ? snackbarErrorMessage(txRes) : successDialog()
     } catch (err) {
-        rollbar.error(`Failed to bridge ${token} to ${account ? 'EOS' : 'ethereum'} tokens error=${JSON.stringify(err, null, 2)}`)
         snackbarErrorMessage(err)
     }
   }
