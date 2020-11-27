@@ -710,7 +710,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           </MuiThemeProvider>
 
           <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none' }}
-            disabled={buttonText !== 'Approve + Send' || sendBal > accountBal || isNaN(sendBal)}
+            // disabled={buttonText !== 'Approve + Send' || sendBal > accountBal || isNaN(sendBal)}
             onClick={() => {
                bridgeToken()
             }}
