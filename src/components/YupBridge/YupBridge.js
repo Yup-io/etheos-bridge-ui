@@ -19,10 +19,9 @@ import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
 import axios from 'axios'
-import rollbar from 'rollbar'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
-const { YUP_TOKEN_ETH, YUP_BRIDGE_FEE, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_BRIDGE_FEE, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
+const { YUP_TOKEN_ETH, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 const YUPETH_TRANSFER_MODAL_INFO_TEXT = ` Make sure to unwrap your tokens back to UNI LP via this bridge when it arrives, by connecting your receiving metamask address.`
 
 const styles = theme => ({
@@ -184,12 +183,14 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [token, setToken] = useState('YUP')
   const [chain, setChain] = useState('')
   const [ethAddress, setETHAddress] = useState('')
-  const [sendBal, setSendBal] = useState(0.0000)
+  const [sendBal, setSendBal] = useState(0.000)
   const [accountBal, setAccountBal] = useState(0.000)
   const [memo, setMemo] = useState('')
   const [error, setError] = useState({ severity: 'warning', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
-  const [bridgeFee, setBridgeFee] = useState(0.0000)
-  const [total, setTotal] = useState(0.0000)
+  const [bridgeFeeYUP, setBridgeFeeYUP] = useState(0.000)
+  const [bridgeFee, setBridgeFee] = useState(0.000)
+  const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState(0.000)
+  const [total, setTotal] = useState(0.000)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   const [buttonText, setButtonText] = useState('Approve + Send')
   const [unwrapButtonText, setUnwrapButtonText] = useState('Unwrap')
@@ -221,10 +222,16 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }, [account])
 
   useEffect(() => {
-    const bridgeFee = account ? 0.0000 : (token === 'YUP' ? YUP_BRIDGE_FEE : LP_BRIDGE_FEE)
+    if (bridgeFeeYUP === 0 || bridgeFeeYUPETH === 0) { // if default value of 0 than fetch and store
+    (async function fetchandSetFees () {
+      setBridgeFeeYUP((await axios.get(`https://api.yup.io/bridge/fee-yup`)).data.bridgeFeeYUP)
+      setBridgeFeeYUPETH((await axios.get(`https://api.yup.io/bridge/fee-yupeth`)).data.bridgeFeeYUPETH)
+    })()
+  }
+    const bridgeFee = account ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
     setBridgeFee(bridgeFee)
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
-    const parsedFeePlusSendBal = parseFloat(numeral(total).format('0,0.0000'))
+    const parsedFeePlusSendBal = parseFloat(numeral(total).format('0,0.000'))
     setTotal(parsedFeePlusSendBal)
   }, [token, sendBal, account, scatter])
 
@@ -249,7 +256,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       await wrapTokenInstance.methods.unwrap(rawWrapYUPETHbalance).send({ from: account })
       resetState()
     } catch (err) {
-      rollbar.error(`Failed to unwrap tokens error=${JSON.stringify(err, null, 2)}`)
       snackbarErrorMessage(err)
     }
   }
@@ -278,7 +284,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         setAccountBal(balance)
     }
    } catch (err) {
-      rollbar.error(`Failed to fetch balance error=${JSON.stringify(err, null, 2)}`)
       setAccountBal(0.00)
     }
   }
@@ -355,13 +360,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       }
 
       if (scatterAccount) {
-        const txData = { amount: sendBal, asset: token, recipient: memo }
+        const txData = { amount: sendBal, asset: token, recipient: memo, fee: bridgeFee }
         txRes = await transfer(scatterAccount, txData)
       }
 
       txRes == null ? snackbarErrorMessage(txRes) : successDialog()
     } catch (err) {
-        rollbar.error(`Failed to bridge ${token} to ${account ? 'EOS' : 'ethereum'} tokens error=${JSON.stringify(err, null, 2)}`)
         snackbarErrorMessage(err)
     }
   }
@@ -379,6 +383,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     setButtonText('Approve + Send')
     setUnwrapButtonText('Unwrap')
     setUnwrapDialogOpen(false)
+    setSendBal(0)
     fetchAndSetBalance()
     setLoading(false)
     setModalLoading(false)
@@ -483,7 +488,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         <DialogTitle id='form-dialog-title'>Unwrap</DialogTitle>
         <DialogContent>
           <DialogContentText className={classes.disclaimerText}>
-            You have {numeral(unwrappedYUPETHbalance).format('0,0.0000') } YUPETH to unwrap.
+            You have {numeral(unwrappedYUPETHbalance).format('0,0.000') } YUPETH to unwrap.
           </DialogContentText>
           <DialogContentText className={classes.disclaimerText}>
             <Button
@@ -669,7 +674,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               >
                 <Typography className={classes.feeText}
                   style={{ textAlign: 'right' }}
-                >{bridgeFee} {token}</Typography>
+                >{numeral(bridgeFee).format('0,0.000')} {token}</Typography>
               </Grid>
             </Grid>
 
@@ -724,7 +729,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           </MuiThemeProvider>
 
           <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none' }}
-            disabled={buttonText !== 'Approve + Send' || sendBal > accountBal || isNaN(sendBal)}
+            // disabled={buttonText !== 'Approve + Send' || sendBal > accountBal || isNaN(sendBal)}
             onClick={() => {
                bridgeToken()
             }}
