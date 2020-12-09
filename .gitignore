@@ -1,1 +1,72 @@
+
+# dependencies
+/**/node_modules
+node_modules
+
+# vim undo files
+*.un~
+
+# testing
+/**/coverage
+/**/.nyc_output
+
+# production
+/**/build
+/**/dist
+
+# ipfs storage directory
+/ipfs_docker
+
+# eosio generated contract files
+
+# eosio block data directory
+/eosio_docker/data
+
+# eosio compiled contracts
+/eosio_docker/**/compiled_contracts
+
+# eosio wallet passwords
+eosio_docker/**/*password.txt
+
+# eosio.cdt
+/eosio_docker/**/eosio.cdt*
+
+# zeus sample box
+/coldtoken/*
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.Rhistory
+**/.idea
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+frontend/node_modules/
+frontend/.idea/
+eosio_docker/scripts/eosio.cdt-1.3.2.x86_64.deb
+**/logs
+**/**/*.wasm
+**/**/*.abi
+
+**/.idea/**
+**/.idea/
+/.idea
+/.idea/**
+**/workspace.xml
+*.swp
+*.icloud
+
+# contract env files
+contracts/**/env.*
+
+**/__pycache__
+virtualenv
+
+**/built
 node_modules
