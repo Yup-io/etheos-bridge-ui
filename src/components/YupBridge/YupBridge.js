@@ -223,7 +223,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const bridgeFee = account ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
     setBridgeFee(bridgeFee)
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
-    const parsedFeePlusSendBal = parseFloat(numeral(total).format('0,0.000'))
+    const parsedFeePlusSendBal = numeral(total).format('0,0.000')
     setTotal(parsedFeePlusSendBal)
   }, [token, sendBal, account, scatter])
 
@@ -539,7 +539,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                   }}
                   style={{ }}
                 />
-                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance: { numeral(accountBal).format('0,0.000') } </FormHelperText>
+                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4', fontSize: '0.55rem' }}>Balance: { numeral(accountBal).format('0,0.000') } </FormHelperText>
               </Grid>
               <Grid item
                 xs={5}
