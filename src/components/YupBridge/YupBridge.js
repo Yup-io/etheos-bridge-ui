@@ -180,7 +180,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [memo, setMemo] = useState('')
   const [error, setError] = useState({ severity: 'warning', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
   const [bridgeFeeYUP, setBridgeFeeYUP] = useState(0.000)
-  const [bridgeFee, setBridgeFee] = useState(0.000)
+  const [bridgeFee, setBridgeFee] = useState(0)
   const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState(0.000)
   const [total, setTotal] = useState(0.000)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
@@ -225,7 +225,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
     const parsedFeePlusSendBal = numeral(total).format('0,0.000')
     setTotal(parsedFeePlusSendBal)
-  }, [token, sendBal, account, scatter])
+  }, [sendBal, scatter, chain, token])
 
   const checkForWrappedYUPETH = async () => {
     const unwrappedBal = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
@@ -352,7 +352,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       }
 
       if (scatterAccount) {
-        const txData = { amount: sendBal, asset: token, recipient: memo, fee: bridgeFee }
+        const txData = { amount: sendBal, asset: token, recipient: memo, fee: Number(bridgeFee) }
         txRes = await transfer(scatterAccount, txData)
       }
 
@@ -719,7 +719,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           </MuiThemeProvider>
 
           <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none' }}
-            // disabled={buttonText !== 'Approve + Send' || sendBal > accountBal || isNaN(sendBal)}
+            disabled={buttonText !== 'Approve + Send' || sendBal + bridgeFee > accountBal || isNaN(sendBal)}
             onClick={() => {
                bridgeToken()
             }}
