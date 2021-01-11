@@ -4,7 +4,6 @@ const { YUP_CONTRACT_ACCOUNT, YUP_ACCOUNT_MANAGER, YUP_TOKEN_EOS, LP_TOKEN_EOS, 
 export async function transfer (account, data) {
   const normalizedAmount = `${Number(data.amount).toFixed(4)} ${data.asset}`
   const normalizedFee = `${Number(data.fee).toFixed(4)} ${data.asset}`
-  console.log('normalizedFee :>> ', normalizedFee)
   const tx = {
     actions: [
       {

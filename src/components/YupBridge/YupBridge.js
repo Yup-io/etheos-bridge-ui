@@ -216,12 +216,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   useEffect(() => {
     if (bridgeFeeYUP === 0 || bridgeFeeYUPETH === 0) { // if default value of 0 than fetch and store
     (async function fetchandSetFees () {
-      setBridgeFeeYUP((await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data.bridgeFeeYUP)
-      setBridgeFeeYUPETH((await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data.bridgeFeeYUPETH)
+      setBridgeFeeYUP((await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data)
+      setBridgeFeeYUPETH((await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data)
     })()
-  }
+   }
     const bridgeFee = account ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
-    setBridgeFee(bridgeFee)
+    setBridgeFee(parseFloat(bridgeFee))
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
     const parsedFeePlusSendBal = numeral(total).format('0,0.000')
     setTotal(parsedFeePlusSendBal)
