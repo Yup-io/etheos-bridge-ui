@@ -180,7 +180,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const [memo, setMemo] = useState('')
   const [error, setError] = useState({ severity: 'warning', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
   const [bridgeFeeYUP, setBridgeFeeYUP] = useState(0.000)
-  const [bridgeFee, setBridgeFee] = useState(0.000)
+  const [bridgeFee, setBridgeFee] = useState(0)
   const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState(0.000)
   const [total, setTotal] = useState(0.000)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
@@ -215,17 +215,19 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   useEffect(() => {
     if (bridgeFeeYUP === 0 || bridgeFeeYUPETH === 0) { // if default value of 0 than fetch and store
-    (async function fetchandSetFees () {
-      setBridgeFeeYUP((await axios.get(`https://api.yup.io/bridge/fee-yup`)).data.bridgeFeeYUP)
-      setBridgeFeeYUPETH((await axios.get(`https://api.yup.io/bridge/fee-yupeth`)).data.bridgeFeeYUPETH)
-    })()
-  }
-    const bridgeFee = account ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
-    setBridgeFee(bridgeFee)
+      (async function fetchandSetFees () {
+        const yupFee = (await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data
+        setBridgeFeeYUP(yupFee)
+        const yupETHFee = (await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data
+        setBridgeFeeYUPETH(yupETHFee)
+      })()
+    }
+    let fee = account ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
+    setBridgeFee(fee)
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
-    const parsedFeePlusSendBal = parseFloat(numeral(total).format('0,0.000'))
+    const parsedFeePlusSendBal = numeral(total).format('0,0.000')
     setTotal(parsedFeePlusSendBal)
-  }, [token, sendBal, account, scatter])
+  }, [sendBal, scatter, chain, token])
 
   const checkForWrappedYUPETH = async () => {
     const unwrappedBal = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
@@ -352,7 +354,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       }
 
       if (scatterAccount) {
-        const txData = { amount: sendBal, asset: token, recipient: memo, fee: bridgeFee }
+        const txData = { amount: sendBal, asset: token, recipient: memo, fee: Number(bridgeFee) }
         txRes = await transfer(scatterAccount, txData)
       }
 
@@ -539,7 +541,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                   }}
                   style={{ }}
                 />
-                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Balance: { numeral(accountBal).format('0,0.000') } </FormHelperText>
+                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4', fontSize: '0.55rem' }}>Balance: { numeral(accountBal).format('0,0.000') } </FormHelperText>
               </Grid>
               <Grid item
                 xs={5}
