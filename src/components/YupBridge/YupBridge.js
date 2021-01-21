@@ -173,12 +173,16 @@ const theme = createMuiTheme({
 const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const { account } = useWeb3React()
   const [token, setToken] = useState('YUP')
+  const [bridgeIsActive, setBridgeIsActive] = useState(true)
   const [chain, setChain] = useState('')
   const [ethAddress, setETHAddress] = useState('')
   const [sendBal, setSendBal] = useState(0.000)
   const [accountBal, setAccountBal] = useState(0.000)
   const [memo, setMemo] = useState('')
-  const [error, setError] = useState({ severity: 'warning', msg: 'This is an experimental technology. Use with caution!', snackbar: true })
+  const [error, setError] = useState({
+    severity: 'warning',
+    msg: 'This is an experimental technology. Use with caution!',
+    snackbar: true })
   const [bridgeFeeYUP, setBridgeFeeYUP] = useState(0.000)
   const [bridgeFee, setBridgeFee] = useState(0.000)
   const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState(0.000)
@@ -215,11 +219,13 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
   useEffect(() => {
     if (bridgeFeeYUP === 0 || bridgeFeeYUPETH === 0) { // if default value of 0 than fetch and store
-    (async function fetchandSetFees () {
+    (async () => {
       setBridgeFeeYUP((await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data)
       setBridgeFeeYUPETH((await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data)
+      setBridgeIsActive((await axios.get(`${BACKEND_API}/bridge/status`)).data)
     })()
    }
+    if (!bridgeIsActive) setError({ severity: 'error', msg: 'Bridge is currently disabled due to high gas prices. Check back later.', snackbar: true })
     const bridgeFee = account ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
     setBridgeFee(parseFloat(bridgeFee))
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
@@ -718,8 +724,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             </Grid>
           </MuiThemeProvider>
 
-          <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) ? 'all' : 'none' }}
-            // disabled={buttonText !== 'Approve + Send' || sendBal > accountBal || isNaN(sendBal)}
+          <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) && bridgeIsActive ? 'all' : 'none' }}
             onClick={() => {
                bridgeToken()
             }}
