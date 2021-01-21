@@ -225,7 +225,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       setBridgeIsActive((await axios.get(`${BACKEND_API}/bridge/status`)).data)
     })()
    }
-    if (!bridgeIsActive) setError({ severity: 'error', msg: 'Bridge is currently disabled due to high gas prices. Check back later.', snackbar: true })
+    if (!bridgeIsActive) {
+      setError({ severity: 'error', msg: 'Bridge is currently disabled due to high gas prices. Check back later.', snackbar: true })
+      setButtonText('Temporarily Disabled')
+    }
     const bridgeFee = account ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
     setBridgeFee(parseFloat(bridgeFee))
     const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
