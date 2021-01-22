@@ -183,9 +183,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     severity: 'warning',
     msg: 'This is an experimental technology. Use with caution!',
     snackbar: true })
-  const [bridgeFeeYUP, setBridgeFeeYUP] = useState()
+  const [bridgeFeeYUP, setBridgeFeeYUP] = useState(0.000)
   const [bridgeFee, setBridgeFee] = useState(0)
-  const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState()
+  const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState(0.000)
   const [total, setTotal] = useState(0.000)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   const [buttonText, setButtonText] = useState('Approve + Send')
@@ -206,21 +206,21 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const yupTokenInstance = new web3.eth.Contract(ERC20ABI, YUP_TOKEN_ETH)
 
   useEffect(() => {
-    setChain(account ? 'EOS' : 'ETH')
+    setChain(!scatterAccount ? 'EOS' : 'ETH')
     fetchAndSetBalance()
-  }, [account, scatter, token])
+  }, [account, scatter, token, scatterAccount])
 
   // check if there is wrappeth YUPETH and trigger unwrap if so
   useEffect(() => {
    checkForWrappedYUPETH()
-  //  setSendBal(0.001)
-  //  setMemo('plubplubplux')
   }, [account])
 
   useEffect(() => {
     (async () => {
-      if (!bridgeFeeYUP) setBridgeFeeYUP((await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data)
-      if (!bridgeFeeYUPETH) setBridgeFeeYUPETH((await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data)
+      if (bridgeFeeYUP === 0 || bridgeFeeYUPETH === 0) {
+        setBridgeFeeYUP((await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data)
+        setBridgeFeeYUPETH((await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data)
+      }
       setBridgeIsActive((await axios.get(`${BACKEND_API}/bridge/status`)).data)
     })()
 
@@ -228,9 +228,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       setError({ severity: 'error', msg: 'Bridge is currently disabled due to high gas prices. Check back later.', snackbar: true })
       setButtonText('Temporarily Disabled')
     }
-    const bridgeFee = account ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
+    const bridgeFee = !scatter ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
     setBridgeFee(parseFloat(bridgeFee))
-    const total = chain === account ? sendBal : sendBal + parseFloat(bridgeFee)
+    const total = chain === !scatterAccount ? sendBal : sendBal + parseFloat(bridgeFee)
     const parsedFeePlusSendBal = numeral(total).format('0,0.000')
     setTotal(parsedFeePlusSendBal)
   }, [sendBal, scatter, chain, token])
@@ -663,7 +663,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               className={classes.feeGrid}
               alignItems='center'
               direction='row'
-              style={{ display: account ? 'none' : '' }}
+              style={{ display: !scatterAccount ? 'none' : '' }}
             >
               <Grid item
                 xs={6}

@@ -8,7 +8,7 @@ import { useEagerConnect, useInactiveListener } from '../../utils/hooks'
 import { injected } from '../../utils/connectors.js'
 
 import { connect } from 'react-redux'
-import { loginScatter, signalConnection } from '../../redux/actions/scatter.actions'
+import { loginScatter, signalConnection, logoutScatter } from '../../redux/actions/scatter.actions'
 import scatterWallet from '../../eos/scatter/scatter.wallet'
 
 const styles = theme => ({
@@ -115,7 +115,7 @@ const styles = theme => ({
 const WalletLogin = (props) => {
   const { classes } = props
   const { connector, account, activate } = useWeb3React()
-  const { scatter, scatterAccount, updateScatter, scatterInstall } = props
+  const { scatter, scatterAccount, updateScatter, scatterInstall, logoutScatter } = props
   const [scatterActive, setScatter] = useState()
   const [metaActive, setMeta] = useState()
 
@@ -207,6 +207,11 @@ const WalletLogin = (props) => {
             <Button color='inherit'
               className={classes.connect}
               onClick={() => {
+                console.log('boom')
+                console.log('scatter before :>> ', scatter)
+
+                logoutScatter()
+                console.log('scatter after :>> ', scatter)
                 setScatter(false)
                 handleDialogOpen()
               }}
@@ -341,6 +346,7 @@ WalletLogin.propTypes = {
   scatter: PropTypes.object,
   scatterInstall: PropTypes.func,
   updateScatter: PropTypes.func,
+  logoutScatter: PropTypes.func,
   scatterAccount: PropTypes.object
 }
 
@@ -351,7 +357,8 @@ const mapStateToProps = ({ scatterRequest }) => {
 const mapDispatchToProps = dispatch => {
   return {
     scatterInstall: (bool) => dispatch(signalConnection(bool)),
-    updateScatter: (scatter, scatterAccount) => dispatch(loginScatter(scatter, scatterAccount))
+    updateScatter: (scatter, scatterAccount) => dispatch(loginScatter(scatter, scatterAccount)),
+    logoutScatter: () => dispatch(logoutScatter())
   }
 }
 
