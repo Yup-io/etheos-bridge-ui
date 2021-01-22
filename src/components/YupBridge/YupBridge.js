@@ -173,7 +173,7 @@ const theme = createMuiTheme({
 const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const { account } = useWeb3React()
   const [token, setToken] = useState('YUP')
-  const [bridgeIsActive, setBridgeIsActive] = useState(true)
+  const [bridgeIsActive, setBridgeIsActive] = useState()
   const [chain, setChain] = useState('')
   const [ethAddress, setETHAddress] = useState('')
   const [sendBal, setSendBal] = useState(0.000)
@@ -183,9 +183,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     severity: 'warning',
     msg: 'This is an experimental technology. Use with caution!',
     snackbar: true })
-  const [bridgeFeeYUP, setBridgeFeeYUP] = useState(0.000)
+  const [bridgeFeeYUP, setBridgeFeeYUP] = useState()
   const [bridgeFee, setBridgeFee] = useState(0)
-  const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState(0.000)
+  const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState()
   const [total, setTotal] = useState(0.000)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   const [buttonText, setButtonText] = useState('Approve + Send')
@@ -218,13 +218,12 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }, [account])
 
   useEffect(() => {
-    if (bridgeFeeYUP === 0 || bridgeFeeYUPETH === 0) { // if default value of 0 than fetch and store
     (async () => {
-      setBridgeFeeYUP((await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data)
-      setBridgeFeeYUPETH((await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data)
+      if (!bridgeFeeYUP) setBridgeFeeYUP((await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data)
+      if (!bridgeFeeYUPETH) setBridgeFeeYUPETH((await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data)
       setBridgeIsActive((await axios.get(`${BACKEND_API}/bridge/status`)).data)
     })()
-   }
+
     if (!bridgeIsActive) {
       setError({ severity: 'error', msg: 'Bridge is currently disabled due to high gas prices. Check back later.', snackbar: true })
       setButtonText('Temporarily Disabled')
