@@ -319,7 +319,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     let txRes
     setLoading(true)
     try {
-      if (account) {
+      if (!scatterAccount) {
         const allowance = web3.utils.toWei((sendBal * 5).toString()) // multiplied to prevent requiring too many approvals
         const sendBalWei = web3.utils.toWei(sendBal.toString())
         const allowanceBN = toBN(allowance)
@@ -384,7 +384,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     setButtonText('Approve + Send')
     setUnwrapButtonText('Unwrap')
     setUnwrapDialogOpen(false)
-    setSendBal(0)
     fetchAndSetBalance()
     setLoading(false)
     setModalLoading(false)
@@ -625,7 +624,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                     <MenuItem
                       className={classes.menu}
                       value='ETH'
-                      style={{ pointerEvents: account ? 'none' : '' }}
+                      style={{ pointerEvents: !scatterAccount ? 'none' : '' }}
                     >Ethereum</MenuItem>
                     <MenuItem
                       className={classes.menu}
