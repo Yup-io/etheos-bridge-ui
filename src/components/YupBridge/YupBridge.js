@@ -502,7 +502,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             >
               {unwrapButtonText}
               {modalLoading && (<CircularProgress size={30}
-                style={{ color: 'white', position: 'relative', left: 45 }}
+                style={{ color: 'white', position: 'relative', left: 17 }}
                                 />)}
             </Button>
           </DialogContentText>
