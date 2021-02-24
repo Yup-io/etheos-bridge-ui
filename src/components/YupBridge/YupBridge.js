@@ -19,6 +19,7 @@ import Alert from '@material-ui/lab/Alert'
 import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
 import axios from 'axios'
+import rollbar from 'rollbar'
 
 const web3 = new Web3(new Web3(Web3.givenProvider))
 const { YUP_TOKEN_ETH, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
@@ -362,7 +363,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
       if (scatterAccount) {
         const txData = { amount: sendBal, asset: token, recipient: memo, fee: Number(bridgeFee) }
-        if (token === 'YUP' && Number(bridgeFee) < 3) { throw error }
+        if (token === 'YUP' && Number(bridgeFee) < 3) {
+          rollbar.error(`Attempted bridge with unually low YUP fee of ${bridgeFee}`)
+          throw error
+        }
         txRes = await transfer(scatterAccount, txData)
       }
 
@@ -378,7 +382,6 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }
 
   const resetState = () => {
-    // txBucket = []
     approvalTxBucket = []
     document.getElementById('send-bal-field').value = ''
     document.getElementById('address-field').value = ''
