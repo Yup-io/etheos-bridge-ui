@@ -174,7 +174,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const { account } = useWeb3React()
   const [token, setToken] = useState('YUP')
   const [bridgeIsActive, setBridgeIsActive] = useState()
-  const [chain, setChain] = useState('ETH')
+  const [chain, setChain] = useState('')
   const [ethAddress, setETHAddress] = useState('')
   const [sendBal, setSendBal] = useState(0.000)
   const [accountBal, setAccountBal] = useState(0.000)
