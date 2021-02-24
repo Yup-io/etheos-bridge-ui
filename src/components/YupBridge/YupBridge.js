@@ -174,7 +174,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const { account } = useWeb3React()
   const [token, setToken] = useState('YUP')
   const [bridgeIsActive, setBridgeIsActive] = useState()
-  const [chain, setChain] = useState('')
+  const [chain, setChain] = useState('ETH')
   const [ethAddress, setETHAddress] = useState('')
   const [sendBal, setSendBal] = useState(0.000)
   const [accountBal, setAccountBal] = useState(0.000)
@@ -362,6 +362,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
       if (scatterAccount) {
         const txData = { amount: sendBal, asset: token, recipient: memo, fee: Number(bridgeFee) }
+        if (token === 'YUP' && Number(bridgeFee) < 3) { throw error }
         txRes = await transfer(scatterAccount, txData)
       }
 
