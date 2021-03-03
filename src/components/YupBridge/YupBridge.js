@@ -20,7 +20,7 @@ import numeral from 'numeral'
 import { transfer } from '../../eos/actions'
 import axios from 'axios'
 import rollbar from 'rollbar'
-
+/* eslint-disable */
 const web3 = new Web3(new Web3(Web3.givenProvider))
 const { YUP_TOKEN_ETH, BACKEND_API, YUP_BRIDGE_CONTRACT_ETH, LP_WRAP_TOKEN_ETH, LP_BRIDGE_CONTRACT_ETH, LP_UNWRAP_TOKEN_ETH, LP_BRIDGE_MIN, YUP_BRIDGE_MIN } = process.env
 const YUPETH_TRANSFER_MODAL_INFO_TEXT = ` Make sure to unwrap your tokens back to UNI LP via this bridge when it arrives, by connecting your receiving metamask address.`
@@ -362,6 +362,15 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       }
 
       if (scatterAccount) {
+        if (!web3.utils.isAddress(memo)) {
+          setError({
+            severity: 'error',
+            msg: 'Please enter a valid Ethereum address.',
+            snackbar: true })
+            setLoading(false)
+            setMemo('')
+            return
+        }
         const txData = { amount: sendBal, asset: token, recipient: memo, fee: Number(bridgeFee) }
         if (token === 'YUP' && Number(bridgeFee) < 3) {
           rollbar.error(`Attempted bridge with unually low YUP fee of ${bridgeFee}`)
@@ -730,7 +739,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             </Grid>
           </MuiThemeProvider>
 
-          <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) && bridgeIsActive ? 'all' : 'none' }}
+          <Button
+          // style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) && bridgeIsActive ? 'all' : 'none' }}
             onClick={() => {
                bridgeToken()
             }}
