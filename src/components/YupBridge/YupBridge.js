@@ -362,6 +362,15 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
       }
 
       if (scatterAccount) {
+        if (!web3.utils.isAddress(memo)) {
+          setError({
+            severity: 'error',
+            msg: 'Please enter a valid Ethereum address.',
+            snackbar: true })
+            setLoading(false)
+            setMemo('')
+            return
+        }
         const txData = { amount: sendBal, asset: token, recipient: memo, fee: Number(bridgeFee) }
         if (token === 'YUP' && Number(bridgeFee) < 3) {
           rollbar.error(`Attempted bridge with unually low YUP fee of ${bridgeFee}`)
@@ -730,7 +739,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             </Grid>
           </MuiThemeProvider>
 
-          <Button style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) && bridgeIsActive ? 'all' : 'none' }}
+          <Button
+            style={{ pointerEvents: (sendBal >= (token === 'YUP' ? YUP_BRIDGE_MIN : LP_BRIDGE_MIN)) && bridgeIsActive ? 'all' : 'none' }}
             onClick={() => {
                bridgeToken()
             }}
