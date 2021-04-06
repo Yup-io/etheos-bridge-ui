@@ -232,7 +232,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
 
     const bridgeFee = !scatter ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
     setBridgeFee(parseFloat(bridgeFee))
-    const total = chain === !scatterAccount ? sendBal : sendBal + parseFloat(bridgeFee)
+    const total = chain === !scatterAccount ? sendBal : sendBal - parseFloat(bridgeFee)
     const parsedFeePlusSendBal = numeral(total).format('0,0.000')
     setTotal(parsedFeePlusSendBal)
   }, [sendBal, scatter, chain, token])
