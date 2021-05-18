@@ -371,8 +371,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             setMemo('')
             return
         }
-        const txData = { amount: sendBal, asset: token, recipient: memo, fee: Number(bridgeFee) }
-        if (token === 'YUP' && Number(bridgeFee) < 3) {
+        const txData = { amount: Number(total), asset: token, recipient: memo, fee: Number(bridgeFee) }
+        if (txData.asset === 'YUP' && txData.fee < 10) {
           rollbar.error(`Attempted bridge with unually low YUP fee of ${bridgeFee}`)
           throw error
         }
