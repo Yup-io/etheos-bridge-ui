@@ -233,8 +233,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const bridgeFee = !scatter ? 0.0000 : (token === 'YUP' ? bridgeFeeYUP : bridgeFeeYUPETH)
     setBridgeFee(parseFloat(bridgeFee))
     const total = chain === !scatterAccount ? sendBal : sendBal - parseFloat(bridgeFee)
-    const parsedFeePlusSendBal = numeral(total).format('0,0.000')
-    setTotal(parsedFeePlusSendBal)
+    setTotal(total)
   }, [sendBal, scatter, chain, token])
 
   const checkForWrappedYUPETH = async () => {
@@ -263,7 +262,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }
 
   const handleBalanceChange = (e) => {
-    setSendBal(parseFloat(e.target.value))
+    const formatSendBal = (e.target.value).replace(/,/g, '')
+    setSendBal(parseFloat(formatSendBal))
   }
 
   const handleSuccessDialogClose = () => {
@@ -709,7 +709,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
               >
                 <Typography className={classes.feeText}
                   style={{ color: '#fff', textAlign: 'right' }}
-                ><strong>{total} {token}</strong></Typography>
+                ><strong>{numeral(total).format('0,0,0.000')} {token}</strong></Typography>
               </Grid>
             </Grid>
 
