@@ -21,11 +21,8 @@ export async function transfer (account, data) {
         authorization: [{
           actor: account.name,
           permission: account.authority
-        },
-        {
-          actor: YUP_ACCOUNT_MANAGER,
-          permission: 'active'
-        }],
+        }
+      ],
         data: {
           from: account.name,
           to: data.asset === 'YUP' ? YUP_BRIDGE_CONTRACT_EOS : LP_BRIDGE_CONTRACT_EOS,
@@ -39,11 +36,8 @@ export async function transfer (account, data) {
         authorization: [{
           actor: account.name,
           permission: account.authority
-        },
-        {
-          actor: YUP_ACCOUNT_MANAGER,
-          permission: 'active'
-        }],
+        }
+      ],
         data: {
           from: account.name,
           to: YUP_ACCOUNT_MANAGER,
