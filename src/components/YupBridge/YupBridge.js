@@ -353,7 +353,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
           setButtonText(`Sending ${token}...`)
           txRes = await yupBridgeContractInstance.methods.sendToken(sendBalBN, memoUINT64).send({ from: account })
         }
+
         if (token === 'wYUPETH') {
+          setButtonText(`Sending ${token}...`)
           txRes = await lpBridgeContractInstance.methods.sendToken(sendBalBN, memoUINT64).send({ from: account })
         }
 
