@@ -174,7 +174,7 @@ const theme = createMuiTheme({
 const YupBridge = ({ classes, scatter, scatterAccount }) => {
   const { account } = useWeb3React()
   const [token, setToken] = useState('YUP')
-  const [bridgeIsActive, setBridgeIsActive] = useState(false)
+  const [bridgeIsActive, setBridgeIsActive] = useState()
   const [chain, setChain] = useState('')
   const [ethAddress, setETHAddress] = useState('')
   const [sendBal, setSendBal] = useState(0.000)
@@ -222,8 +222,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
         setBridgeFeeYUP((await axios.get(`${BACKEND_API}/bridge/fee-yup`)).data)
         setBridgeFeeYUPETH((await axios.get(`${BACKEND_API}/bridge/fee-yupeth`)).data)
       }
-      // const { data: bridgeStatus } = await axios.get(`${BACKEND_API}/bridge/status`)
-      const bridgeStatus = true
+      const { data: bridgeStatus } = await axios.get(`${BACKEND_API}/bridge/status`)
       if (!bridgeStatus) {
         setError({ severity: 'error', msg: 'Bridge is currently disabled due to high gas prices. Check back later.', snackbar: true })
         setButtonText('Temporarily Disabled')
