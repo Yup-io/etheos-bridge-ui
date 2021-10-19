@@ -602,9 +602,9 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                     >YUP-ETH LP</MenuItem>
                     {wrappedYUPETHBal > 0 && (
                       <MenuItem
-                      className={classes.menu}
-                      value='wYUPETH'
-                    >wYUP-ETH</MenuItem>
+                        className={classes.menu}
+                        value='wYUPETH'
+                      >wYUP-ETH</MenuItem>
                     )}
                   </Select>
                   <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4' }}>Token</FormHelperText>
