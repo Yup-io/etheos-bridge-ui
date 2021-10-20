@@ -185,8 +185,8 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     msg: 'This is an experimental technology. Use with caution!',
     snackbar: true })
   const [bridgeFeeYUP, setBridgeFeeYUP] = useState(0.000)
-  const [bridgeFee, setBridgeFee] = useState(0)
-  const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState(0.000)
+  const [bridgeFee, setBridgeFee] = useState()
+  const [bridgeFeeYUPETH, setBridgeFeeYUPETH] = useState()
   const [total, setTotal] = useState(0.000)
   const [successDialogOpen, setSuccessDialogOpen] = useState(false)
   const [buttonText, setButtonText] = useState('Approve + Send')
