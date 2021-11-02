@@ -226,7 +226,7 @@ const WalletLogin = (props) => {
                   style={{ marginBottom: '2px' }}
                 >
                   <img className={classes.buttonIcon}
-                    src='images/logos/yuplogowhite.png'
+                    src='images/logos/yuplogo.svg'
                   />
                 </Grid>
                 <Grid item>
@@ -299,7 +299,7 @@ const WalletLogin = (props) => {
                       </Grid>
                       <Grid item>
                         <img className={classes.walletIcon}
-                          src='images/logos/yuplogowhite.png'
+                          src='images/logos/yuplogo.svg'
                         />
                       </Grid>
                     </Grid>
