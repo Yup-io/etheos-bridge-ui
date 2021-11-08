@@ -189,7 +189,7 @@ const WalletLogin = (props) => {
                   />
                 </Grid>
                 <Grid item>
-                  {account.substring(0, 8)}...
+                  {account && account.substring(0, 8)}...
                 </Grid>
               </Grid>
             </Button>
