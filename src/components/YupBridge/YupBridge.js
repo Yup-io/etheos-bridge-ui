@@ -84,7 +84,7 @@ const styles = theme => ({
   },
   formControl: {
     minWidth: 100,
-    marginRight: '0px',
+    marginRight: 0,
     [theme.breakpoints.down('xs')]: {
       minWidth: 20
     }
@@ -129,6 +129,12 @@ const styles = theme => ({
       fontSize: '0.9rem'
     }
 
+  },
+  maxBalBtn: {
+    position: 'relative',
+    fontSize: '0.5rem',
+    marginTop: -85,
+    marginLeft: 70
   },
   sendBtn: {
     backgroundColor: '#04C399',
@@ -240,6 +246,10 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
     const wrappedBal = await wrapTokenInstance.methods.balanceOf(account).call() * Math.pow(10, -18)
     setWrappedYUPETHBal(wrappedBal)
     if (wrappedBal > 0) { setUnwrapDialogOpen(true) }
+  }
+
+  const setMaxBal = () => {
+    document.getElementById('send-bal-field').value = accountBal.toFixed(3)
   }
 
   const unwrapTokens = async () => {
@@ -567,15 +577,24 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
                   InputProps={{
                     className: classes.textField
                   }}
-                  style={{ }}
                 />
-                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4', fontSize: '0.55rem' }}>Balance: { numeral(accountBal).format('0,0.000') } </FormHelperText>
+
+                <FormHelperText style={{ opacity: '0.7', color: '#C4C4C4', fontSize: '0.55rem' }}>
+                  Balance: { numeral(accountBal).format('0,0.000') }
+                  <Button onClick={() => { setMaxBal() }}
+                    className={classes.maxBalBtn}
+                  >
+                    MAX
+                  </Button>
+                </FormHelperText>
               </Grid>
               <Grid item
                 xs={5}
                 sm={3}
               >
-                <FormControl className={classes.formControl}>
+                <FormControl className={classes.formControl}
+                  style={{ marginLeft: 30 }}
+                >
                   <Select
                     inputProps={{
                       className: classes.textField
