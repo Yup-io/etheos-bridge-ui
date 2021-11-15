@@ -249,7 +249,11 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
   }
 
   const setMaxBal = () => {
-    document.getElementById('send-bal-field').value = accountBal.toFixed(3)
+    if (accountBal > 0.02) {
+      const value = (accountBal - 0.001).toFixed(3)
+      document.getElementById('send-bal-field').value = value
+      handleBalanceChange({ target: { value } })
+    }
   }
 
   const unwrapTokens = async () => {
