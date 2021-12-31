@@ -526,11 +526,7 @@ const YupBridge = ({ classes, scatter, scatterAccount }) => {
             You have {numeral(wrappedYUPETHBal).format('0,0.000')} of wrapped YUPETH. You can either unwrap them or bridge to EOS.
           </DialogContentText>
           <DialogContentText className={classes.disclaimerText}>
-            <Button
-              disabled={unwrapButtonText !== 'Unwrap'}
-              onClick={() => {
-                unwrapTokens()
-              }
+            <Button onClick={() => { unwrapTokens() }
             }
               fullWidth
               variant='outlined'
