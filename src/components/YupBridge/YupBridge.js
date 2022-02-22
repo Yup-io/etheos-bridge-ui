@@ -23,18 +23,21 @@ const YupBridge = () => {
       justify='center'
       alignItems='center'
     >
-      <MuiThemeProvider theme={theme} />
-      <Dialog
-        open
-      >
-        <DialogContent>
-          The YUP EOS-Ethereum bridge is disabled. As of Thursday, users will bridge between Ethereum and Polygon using the <a target='_blank'
-            href='https://wallet.polygon.technology/bridge/'
-                                                                                                                            >Polygon POS Bridge</a>. Learn more about migration <a target='_blank'
-                                                                                                                              href='https://yup.mirror.xyz/aGpM1O8aZS00At2KcoGsBJDtyICNxuYVrDPAqfJfs-A'
-                                                                                                                                                                                >here</a>.
-        </DialogContent>
-      </Dialog>
+      <MuiThemeProvider theme={theme} >
+        <Dialog
+          open
+          dark
+          style={{ fontFamily: 'Rubik, sans-serif', backgroundColor: '#2a2a2a25', backdropFilter: 'blur(4px)', padding: '10px', borderRadius: 10 }}
+        >
+          <DialogContent style={{ fontFamily: 'Rubik, sans-serif', backgroundColor: '#2a2a2a', padding: '20px' }}>
+            The YUP EOS-Ethereum bridge is disabled. As of Thursday, users will bridge between Ethereum and Polygon using the <a target='_blank'
+              href='https://wallet.polygon.technology/bridge/'
+                                                                                                                              >Polygon POS Bridge</a>. Learn more about migration <a target='_blank'
+                                                                                                                                href='https://yup.mirror.xyz/aGpM1O8aZS00At2KcoGsBJDtyICNxuYVrDPAqfJfs-A'
+                                                                                                                                                                                  >here</a>.
+          </DialogContent>
+        </Dialog>
+      </MuiThemeProvider>
     </Grid>
 
   )
